@@ -40,9 +40,12 @@ def list_families(database: Database, args):
 
 
 def main():
-    database = Database()
-
     parser = argparse.ArgumentParser(description="GeneWeb Proof of Concept CLI")
+    parser.add_argument(
+        "--db-file",
+        default="database.pkl",
+        help="Path to the database file (default: database.pkl)",
+    )
     subparsers = parser.add_subparsers(title="Commands", dest="command")
 
     # Add person command
@@ -69,6 +72,7 @@ def main():
 
     # Parse arguments and execute the appropriate function
     args = parser.parse_args()
+    database = Database(storage_file=args.db_file)
     if args.command:
         args.func(database, args)
     else:

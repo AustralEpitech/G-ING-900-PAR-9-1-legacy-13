@@ -1,4 +1,5 @@
 import unittest
+import os
 from core.models import Person, Family
 from core.database import Database
 
@@ -8,7 +9,17 @@ class TestDatabase(unittest.TestCase):
         """
         Set up a fresh database instance for each test.
         """
-        self.db = Database()
+        self.db = Database(storage_file="test_database.pkl")
+
+    def tearDown(self):
+        """
+        Clean up the database after each test.
+        """
+        try:
+            os.remove(self.db.storage_file)
+        except FileNotFoundError:
+            pass
+
 
     def test_add_person(self):
         """

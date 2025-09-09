@@ -87,6 +87,5 @@ python -m unittest discover -s tests
 ## Future Work
 
 - Add support for a web interface.
-- Implement persistent storage for the database.
 - Extend the CLI with more advanced genealogical features.
 - Add support for importing/exporting GEDCOM files.

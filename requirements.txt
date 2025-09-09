@@ -1,5 +1,7 @@
 # Core dependencies
-argparse  # For command-line interface (built-in, no need to install)
+argparse  # For command-line interface
+pickle  # For the database
+os  # For file management
 
 # Optional dependencies for future extensions (e.g., web interface, RPC, etc.)
 flask  # For web interface (optional, not used in the current iteration)
