@@ -1,0 +1,5 @@
+# Core dependencies
+argparse  # For command-line interface (built-in, no need to install)
+
+# Optional dependencies for future extensions (e.g., web interface, RPC, etc.)
+flask  # For web interface (optional, not used in the current iteration)
