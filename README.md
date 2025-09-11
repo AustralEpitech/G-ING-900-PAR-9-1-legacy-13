@@ -52,25 +52,93 @@ LICENSE                  # License file
 
 Run the CLI to interact with the database:
 
-1. **Add a person**:
-   ```bash
-   python -m cli.main add_person --first_name John --last_name Doe --birth_date 1980-01-01
-   ```
+### Add a person
 
-2. **List all persons**:
-   ```bash
-   python -m cli.main list_persons
-   ```
+```bash
+python -m cli.main add_person --first_name Jean --surname Dupont --birth 1980-01-01 --sex M
+```
 
-3. **Add a family**:
-   ```bash
-   python -m cli.main add_family --husband_id 1 --wife_id 2
-   ```
+All fields of the `Person` model are available as options (see `python -m cli.main add_person --help`).
 
-4. **List all families**:
-   ```bash
-   python -m cli.main list_families
-   ```
+### Add a family
+
+```bash
+python -m cli.main add_family --marriage 2000-06-15 --marriage_place Paris
+```
+
+### Add a title to a person
+
+```bash
+python -m cli.main add_title --person_id 1 --name "Baron" --ident "baron" --place "Paris"
+```
+
+### Add a relation to a person
+
+```bash
+python -m cli.main add_relation --person_id 1 --r_type "biological" --father_id 2 --mother_id 3
+```
+
+### Add a child to a family
+
+```bash
+python -m cli.main add_personal_event --person_id 1 --name "Baptism" --date 1980-02-01 --place "Paris"
+```
+
+### Add an event to a family
+
+```bash
+python -m cli.main add_family_event --family_id 1 --name "Divorce" --date 2010-01-01 --place "Lyon"
+```
+
+### List all persons
+
+```bash
+python -m cli.main list_persons
+```
+
+### List all families
+
+```bash
+python -m cli.main list_families
+```
+
+### Display a person by their ID
+
+```bash
+python -m cli.main get_person --person_id 1
+```
+
+Show all fields of the person corresponding to the given ID.
+
+### Display a family by its ID
+
+```bash
+python -m cli.main get_family --family_id 1
+```
+
+Show all fields of the family corresponding to the given ID.
+
+### Add an Ascend to a person
+
+```bash
+python -m cli.main add_ascend --person_id 2 --parents_id 1 --consang 0.125
+```
+This will create an Ascend and attach it to the person with ID 2.
+
+### Add a Descend to a family
+
+```bash
+python -m cli.main add_descend --family_id 1 --children_ids 3 4
+```
+This will create a Descend and attach it to the family with ID 1.
+
+---
+
+For each command, you can see all available options with `--help`, for example:
+
+```bash
+python -m cli.main add_person --help
+```
 
 ---
 
