@@ -1,7 +1,7 @@
 # Core dependencies
-argparse  # For command-line interface
-pickle  # For the database
-os  # For file management
+# argparse  # déjà inclus dans Python
+# pickle    # déjà inclus dans Python
+# os        # déjà inclus dans Python
 
-# Optional dependencies for future extensions (e.g., web interface, RPC, etc.)
-flask  # For web interface (optional, not used in the current iteration)
+# Optional dependencies
+flask  # For web interface (optional)
