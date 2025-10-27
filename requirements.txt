@@ -1,7 +1,0 @@
-# Core dependencies
-# argparse  # déjà inclus dans Python
-# pickle    # déjà inclus dans Python
-# os        # déjà inclus dans Python
-
-# Optional dependencies
-flask  # For web interface (optional)
