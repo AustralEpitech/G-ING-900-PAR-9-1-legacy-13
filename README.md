@@ -10,6 +10,40 @@ This is a simplified proof of concept for the GeneWeb project, implemented in Py
   - Add persons with attributes like first name, last name, birth date, and death date.
   - List all persons in the database.
 
+---
+
+## GeneWeb Python port (new)
+
+An ongoing Python reimplementation of the OCaml GeneWeb lives in `geneweb-python/`.
+
+**Working commands:**
+
+```bash
+# Show all commands
+python geneweb-cli.py --help
+
+# Export to GEDCOM with full family linkage
+python geneweb-cli.py gwb2ged --db-file database.pkl -o output.ged
+
+# Import from GEDCOM
+python geneweb-cli.py ged2gwb input.ged --db-file database.pkl
+
+# Start HTTP REST API daemon
+python geneweb-cli.py gwd --db-file database.pkl --port 2317
+
+# Run data consistency checks
+python geneweb-cli.py check --db-file database.pkl
+```
+
+**Features:**
+- ✅ Bidirectional GEDCOM conversion (import/export)
+- ✅ Full family linkage (spouses, parents, children)
+- ✅ HTTP REST API with search and filtering
+- ✅ Data validation and consistency checks
+- ✅ 8 passing tests
+
+See `geneweb-python/README.md` and `geneweb-python/PORTING_STATUS.md` for complete documentation and roadmap.
+
 - **Family Management**:
   - Create families with a husband, wife, and children.
   - List all families in the database.

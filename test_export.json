@@ -1,0 +1,83 @@
+{
+  "persons": {
+    "1": {
+      "id": 1,
+      "first_name": "Jean",
+      "surname": "Dupont",
+      "sex": "M",
+      "birth": {
+        "date": "01 01 1980",
+        "place": null
+      },
+      "death": {
+        "date": null,
+        "place": null
+      },
+      "occupation": null,
+      "notes": null
+    },
+    "2": {
+      "id": 2,
+      "first_name": "Jean2",
+      "surname": "Dupont",
+      "sex": "M",
+      "birth": {
+        "date": "01 01 1980",
+        "place": null
+      },
+      "death": {
+        "date": null,
+        "place": null
+      },
+      "occupation": null,
+      "notes": null
+    },
+    "3": {
+      "id": 3,
+      "first_name": "Jean2",
+      "surname": "Dupont",
+      "sex": "M",
+      "birth": {
+        "date": "01 01 1980",
+        "place": null
+      },
+      "death": {
+        "date": null,
+        "place": null
+      },
+      "occupation": null,
+      "notes": null
+    },
+    "4": {
+      "id": 4,
+      "first_name": "Jean2",
+      "surname": "Dupont",
+      "sex": "M",
+      "birth": {
+        "date": "01 01 1980",
+        "place": null
+      },
+      "death": {
+        "date": null,
+        "place": null
+      },
+      "occupation": null,
+      "notes": null
+    }
+  },
+  "families": {
+    "1": {
+      "id": 1,
+      "marriage": {
+        "date": "15 06 2000",
+        "place": "Paris"
+      },
+      "divorce": null,
+      "comment": null
+    }
+  },
+  "metadata": {
+    "total_persons": 4,
+    "total_families": 1
+  }
+}

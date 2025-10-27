@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geneweb-python"
+version = "0.1.0"
+description = "Python reimplementation scaffold of GeneWeb"
+authors = [{name="GeneWeb Python Team"}]
+requires-python = ">=3.11"
+
+[project.scripts]
+# Expose placeholders to allow `python -m geneweb_python.app.cli <cmd>`
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["geneweb_python*"]
