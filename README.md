@@ -50,7 +50,7 @@ python -m uvicorn geneweb_py.web.app:app --reload --port 8000
 
 - `geneweb_py/` - main Python package
 	- `web/app.py` - FastAPI app & routes
-	- `storage.py` - simple JSON/file-backed storage implementation
+	- `storage.py` - SQLite-backed storage implementation (normalized schema: persons, families, family_children, notes)
 	- `fs.py` - filesystem helpers (atomic writes, json load/save)
 	- `config.py` - small config loader (defaults + JSON file + env vars)
 	- `plugins.py` - plugin discovery/loader
@@ -104,14 +104,35 @@ Example plugin is in `plugins/example_plugin/` — visit `/hello-plugin` when th
 
 ## Data persistence
 
-Data is stored on disk in the `data/` directory by default:
+By default the application persists data in a local SQLite database file located at `data/storage.db`.
+The DB uses a normalized schema with these main tables:
 
-- `persons.json` — persons metadata
-- `families.json` — families metadata
-- `notes.json` — notes metadata (note bodies may be stored in `data/notes_d/*.txt`)
 
-You can safely stop the dev server; changes are written to disk via atomic writes.
+Changes are written to `data/storage.db` atomically and the notes files are written atomically under `data/notes_d/`.
  
+
+## GEDCOM import / export
+
+This project includes a small GEDCOM importer/exporter to help migrate genealogical
+data into and out of the application. The CLI helper is `scripts/import_gedcom.py` and
+uses a conservative, dependency-free parser by default.
+
+Basic usage (PowerShell):
+
+```powershell
+# Import a GEDCOM into the app's data directory (creates/updates data/storage.db)
+python .\scripts\import_gedcom.py import --file C:\path\to\file.ged --data-dir data
+
+# Export the current DB to a GEDCOM file (parent directories are created automatically)
+python .\scripts\import_gedcom.py export --out C:\path\to\out.ged --data-dir data
+```
+
+Notes:
+- The importer stores GEDCOM record ids with a `gedcom:` prefix (for traceability). The importer
+	is idempotent: importing a file exported by the tool will not create duplicated entries.
+- File-backed notes under `data/notes_d/*.txt` continue to override DB notes as before.
+- Always back up your `data/storage.db` (or legacy JSON data) before running large imports.
+
 ## Running tests
 
 This project includes unit and integration tests using pytest. Integration tests start a
