@@ -250,7 +250,7 @@ Run all tests:
 
 ```bash
 cd /path/to/repo/root
-python -m unittest geneweb-python.tests.test_* -v
+python -m unittest discover -s geneweb-python/tests -p "test_*.py" -v
 ```
 
 Run specific test module:
