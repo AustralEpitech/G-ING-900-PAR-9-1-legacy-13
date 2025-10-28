@@ -50,7 +50,7 @@ python -m uvicorn geneweb_py.web.app:app --reload --port 8000
 
 - `geneweb_py/` - main Python package
 	- `web/app.py` - FastAPI app & routes
-	- `storage.py` - simple JSON/file-backed storage implementation
+	- `storage.py` - SQLite-backed storage implementation (normalized schema: persons, families, family_children, notes)
 	- `fs.py` - filesystem helpers (atomic writes, json load/save)
 	- `config.py` - small config loader (defaults + JSON file + env vars)
 	- `plugins.py` - plugin discovery/loader
@@ -104,13 +104,15 @@ Example plugin is in `plugins/example_plugin/` — visit `/hello-plugin` when th
 
 ## Data persistence
 
-Data is stored on disk in the `data/` directory by default:
+By default the application persists data in a local SQLite database file located at `data/storage.db`.
+The DB uses a normalized schema with these main tables:
 
-- `persons.json` — persons metadata
-- `families.json` — families metadata
-- `notes.json` — notes metadata (note bodies may be stored in `data/notes_d/*.txt`)
+- `persons` — explicit columns for first_name, surname, sex, birth_*/death_* and a `notes_json` list
+- `families` — parent links (husband_id / wife_id)
+- `family_children` — many-to-many rows connecting families to child ids
+- `notes` — metadata (id, title, text)
 
-You can safely stop the dev server; changes are written to disk via atomic writes.
+Changes are written to `data/storage.db` atomically and the notes files are written atomically under `data/notes_d/`.
  
 ## Running tests
 
