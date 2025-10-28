@@ -1,37 +1,169 @@
-"""Simple file-based storage layer (JSON) as a placeholder for .gw handling."""
+"""Storage layer backed by SQLite (keeps same public API as the previous
+file-backed JSON implementation). This implementation stores the persons,
+families and notes metadata as JSON blobs in an SQLite database located at
+``<root>/storage.db``. The `notes_d/` convention (file-backed note bodies)
+is preserved: committing a note writes a file under `notes_d/` and the
+metadata is stored in the DB as before.
+
+The class keeps `self.persons`, `self.families`, `self.notes` dicts in memory
+so the rest of the codebase (and tests) can access them directly as before.
+"""
 from __future__ import annotations
-from typing import Dict, Optional, List, Set, Iterable
-from .fs import json_load, json_save, atomic_write_text, read_text, normalize_note_id
+from typing import Dict, Optional, List, Set, Iterable, Any
+from .fs import atomic_write_text, read_text, normalize_note_id
 from pathlib import Path
+import threading
 from .models import Person, Family, Note
+import sqlite3
+import json
+
+
+def _dict_to_json(obj: Any) -> str:
+    return json.dumps(obj, ensure_ascii=False)
+
+
+def _json_to_dict(s: str) -> Any:
+    return json.loads(s) if s else None
 
 
 class Storage:
     def __init__(self, root: Path) -> None:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
-        self._persons_file = self.root / "persons.json"
-        self._families_file = self.root / "families.json"
-        self._notes_file = self.root / "notes.json"
+        # simple lock to guard DB writes from multiple threads
+        self._lock = threading.RLock()
+        # sqlite DB path
+        self._db_file = self.root / "storage.db"
+        # SQLite connection (opened lazily)
+        self._conn = None
+        self._connect()
+        self._ensure_tables()
         self._load()
 
+    def _connect(self) -> None:
+        if self._conn is None:
+            # Allow using the connection from different threads (uvicorn/fastapi may run handlers
+            # in worker threads). We'll protect concurrent access with a threading lock.
+            self._conn = sqlite3.connect(str(self._db_file), check_same_thread=False)
+            # Use row factory for convenience
+            self._conn.row_factory = sqlite3.Row
+
+    def _ensure_tables(self) -> None:
+        cur = self._conn.cursor()
+        # Normalized schema: persons columns, families and children, notes table
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS persons(
+                id TEXT PRIMARY KEY,
+                first_name TEXT,
+                surname TEXT,
+                sex TEXT,
+                birth_date TEXT,
+                birth_place TEXT,
+                birth_note TEXT,
+                death_date TEXT,
+                death_place TEXT,
+                death_note TEXT,
+                notes_json TEXT
+            )"""
+        )
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS families(
+                id TEXT PRIMARY KEY,
+                husband_id TEXT,
+                wife_id TEXT
+            )"""
+        )
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS family_children(
+                family_id TEXT,
+                child_id TEXT
+            )"""
+        )
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS notes(
+                id TEXT PRIMARY KEY,
+                title TEXT,
+                text TEXT
+            )"""
+        )
+        self._conn.commit()
+
     def _load(self) -> None:
+        # In-memory caches (same public API as previous implementation)
         self.persons: Dict[str, Person] = {}
         self.families: Dict[str, Family] = {}
         self.notes: Dict[str, Note] = {}
-        arr = json_load(self._persons_file, default=[])
-        for d in arr or []:
-            p = Person.from_dict(d)
-            self.persons[p.id] = p
-        arr = json_load(self._families_file, default=[])
-        for d in arr or []:
-            fa = Family.from_dict(d)
-            self.families[fa.id] = fa
-        arr = json_load(self._notes_file, default=[])
-        for d in arr or []:
-            n = Note.from_dict(d)
-            self.notes[n.id] = n
-        # Also load notes from notes_d directory (file-backed notes). Files override notes.json entries.
+
+        cur = self._conn.cursor()
+        # Load persons from normalized columns
+        cur.execute(
+            "SELECT id, first_name, surname, sex, birth_date, birth_place, birth_note, death_date, death_place, death_note, notes_json FROM persons"
+        )
+        for row in cur.fetchall():
+            try:
+                d = {
+                    "id": row["id"],
+                    "first_name": row["first_name"] or "",
+                    "surname": row["surname"] or "",
+                    "sex": row["sex"],
+                    "birth": None,
+                    "death": None,
+                    "notes": [],
+                }
+                if row["birth_date"] or row["birth_place"] or row["birth_note"]:
+                    d["birth"] = {
+                        "kind": "birth",
+                        "date": row["birth_date"],
+                        "place": row["birth_place"],
+                        "note": row["birth_note"],
+                    }
+                if row["death_date"] or row["death_place"] or row["death_note"]:
+                    d["death"] = {
+                        "kind": "death",
+                        "date": row["death_date"],
+                        "place": row["death_place"],
+                        "note": row["death_note"],
+                    }
+                if row["notes_json"]:
+                    try:
+                        d["notes"] = json.loads(row["notes_json"])
+                    except Exception:
+                        d["notes"] = []
+                p = Person.from_dict(d)
+                self.persons[p.id] = p
+            except Exception:
+                continue
+
+        # Load families and their children
+        cur.execute("SELECT id, husband_id, wife_id FROM families")
+        for row in cur.fetchall():
+            try:
+                fid = row["id"]
+                # collect children
+                cur2 = self._conn.cursor()
+                cur2.execute("SELECT child_id FROM family_children WHERE family_id = ?", (fid,))
+                children = [r["child_id"] for r in cur2.fetchall()]
+                d = {
+                    "id": fid,
+                    "husband_id": row["husband_id"],
+                    "wife_id": row["wife_id"],
+                    "children_ids": children,
+                    "events": [],
+                }
+                fa = Family.from_dict(d)
+                self.families[fa.id] = fa
+            except Exception:
+                continue
+
+        # Load notes
+        cur.execute("SELECT id, title, text FROM notes")
+        for row in cur.fetchall():
+            try:
+                d = {"id": row["id"], "title": row["title"] or "", "text": row["text"] or ""}
+                n = Note.from_dict(d)
+                self.notes[n.id] = n
+            except Exception:
+                continue
         notes_d = self.root / "notes_d"
         if notes_d.exists():
             for p in notes_d.rglob("*.txt"):
@@ -45,15 +177,64 @@ class Storage:
                 except Exception:
                     txt = ""
                 title = p.stem
+                # File-backed notes override DB entries
                 self.notes[nid] = Note(id=nid, title=title, text=txt)
         # Build initial family index for fast lookups
         self._rebuild_index()
 
     def _save(self) -> None:
-        json_save(self._persons_file, [p.to_dict() for p in self.persons.values()])
-        json_save(self._families_file, [fa.to_dict() for fa in self.families.values()])
-        # Persist notes metadata to notes.json (disk-backed note content remains in notes_d files)
-        json_save(self._notes_file, [n.to_dict() for n in self.notes.values()])
+        # Persist current in-memory dictionaries into the SQLite DB
+        # Acquire lock to avoid concurrent sqlite access from different threads
+        with self._lock:
+            cur = self._conn.cursor()
+        # Replace persons (normalized columns)
+        cur.execute("DELETE FROM persons")
+        for p in self.persons.values():
+            birth_date = p.birth.date if p.birth else None
+            birth_place = p.birth.place if p.birth else None
+            birth_note = p.birth.note if p.birth else None
+            death_date = p.death.date if p.death else None
+            death_place = p.death.place if p.death else None
+            death_note = p.death.note if p.death else None
+            notes_json = json.dumps(p.notes, ensure_ascii=False) if p.notes else None
+            cur.execute(
+                "INSERT INTO persons(id, first_name, surname, sex, birth_date, birth_place, birth_note, death_date, death_place, death_note, notes_json) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    p.id,
+                    p.first_name,
+                    p.surname,
+                    p.sex,
+                    birth_date,
+                    birth_place,
+                    birth_note,
+                    death_date,
+                    death_place,
+                    death_note,
+                    notes_json,
+                ),
+            )
+
+        # Replace families and family_children
+        cur.execute("DELETE FROM family_children")
+        cur.execute("DELETE FROM families")
+        for fa in self.families.values():
+            cur.execute(
+                "INSERT INTO families(id, husband_id, wife_id) VALUES(?, ?, ?)",
+                (fa.id, fa.husband_id, fa.wife_id),
+            )
+            # insert children rows
+            for cid in fa.children_ids:
+                cur.execute(
+                    "INSERT INTO family_children(family_id, child_id) VALUES(?, ?)",
+                    (fa.id, cid),
+                )
+
+        # Replace notes metadata
+        cur.execute("DELETE FROM notes")
+        for n in self.notes.values():
+            cur.execute("INSERT INTO notes(id, title, text) VALUES(?, ?, ?)", (n.id, n.title, n.text))
+
+        self._conn.commit()
         # Ensure index stays consistent with current families
         self._rebuild_index()
 
