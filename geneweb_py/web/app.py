@@ -13,6 +13,9 @@ from ..config import load_config
 
 app = FastAPI(title="geneweb-py")
 
+# Ensure basic logging is configured so integration-test server logs at INFO are visible
+logging.basicConfig(level=logging.INFO)
+
 # Mount a static directory (created on demand)
 static_dir = Path("static")
 static_dir.mkdir(exist_ok=True)
@@ -120,9 +123,15 @@ def create_person_form(request: Request):
 def create_person(
     first_name: str = Form(...), surname: str = Form(...), sex: Optional[str] = Form(None)
 ):
+    logging.info("create_person called with first_name=%s, surname=%s, sex=%s", first_name, surname, sex)
     p = Person(first_name=first_name, surname=surname, sex=sex)
-    storage.add_person(p)
-    logging.info("Created person %s; persons now: %s", p.id, list(storage.persons.keys()))
+    try:
+        storage.add_person(p)
+        logging.info("Created person %s; persons now: %s", p.id, list(storage.persons.keys()))
+    except Exception:
+        logging.exception("Failed to add person %s", p.id)
+        raise
+    logging.info("create_person completed for %s, redirecting to person page", p.id)
     return RedirectResponse(url=f"/person/{p.id}", status_code=303)
 
 
@@ -258,7 +267,14 @@ def person_page(request: Request, pid: str):
 
     # families the person belongs to (using index)
     families = list(storage.families_of_person(pid))
-
+    logging.info(
+        "Rendering person_page for %s: spouses=%d parents=%d children=%d families=%d",
+        pid,
+        len(spouses),
+        len(parents),
+        len(children),
+        len(families),
+    )
     return templates.TemplateResponse(
         "person.html",
         {
