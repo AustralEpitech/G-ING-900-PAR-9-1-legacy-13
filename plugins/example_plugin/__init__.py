@@ -9,7 +9,7 @@ from fastapi import APIRouter, Request
 def register(app=None, storage=None, config=None, templates=None):
     router = APIRouter()
 
-    @router.get("/hello-plugin", response_class=None)
+    @router.get("/hello-plugin")
     def hello_plugin(request: Request):
         # If templates were provided by the host, render a template; otherwise return JSON
         if templates is not None:

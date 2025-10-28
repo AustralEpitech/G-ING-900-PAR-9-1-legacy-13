@@ -38,6 +38,14 @@ python -m uvicorn geneweb_py.web.app:app --reload --port 8000
 - Notes UI: http://127.0.0.1:8000/notes
 - Example plugin: http://127.0.0.1:8000/hello-plugin (plugin template + CSS are included under `plugins/example_plugin`)
 
+### API
+
+- Programmatic JSON API endpoints are available under `/api`:
+	- `GET /api/person/{pid}` — fetch a person and immediate relations
+	- `GET /api/family/{fid}` — fetch a family and its members
+- OpenAPI documentation (Swagger UI) is available at: http://127.0.0.1:8000/docs
+- ReDoc documentation is available at: http://127.0.0.1:8000/redoc
+
 The app creates minimal sample data on first startup (two persons and a family) — this is done by the
 startup handler `ensure_sample_data()` in `geneweb_py/web/app.py`.
 
@@ -107,16 +115,3 @@ Data is stored on disk in the `data/` directory by default:
 
 You can safely stop the dev server; changes are written to disk via atomic writes.
 
-## Development tips
-
-- To reload templates quickly, the uvicorn `--reload` option picks up file changes in development.
-- If you want to seed custom data for tests, you can either:
-	- call `ensure_sample_data()` manually from a REPL, or
-	- write small Python scripts that use `geneweb_py.storage.Storage` to create objects in `data/`.
-- If FastAPI raises import/startup errors, check the terminal output — most issues are missing dependencies or path problems.
-
-## Troubleshooting
-
-- Port already in use: either stop the other process or run uvicorn on a different port via `--port 8001`.
-- Static files 404: verify `static/` exists and that the app was started from the repository root (the server mounts `static/`).
-- Permissions errors when writing `data/`: ensure the running user has write permissions in the project folder.

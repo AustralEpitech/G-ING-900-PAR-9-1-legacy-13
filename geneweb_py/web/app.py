@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
@@ -11,7 +11,7 @@ import logging
 from ..plugins import load_plugins
 from ..config import load_config
 
-app = FastAPI(title="geneweb-py (prototype)")
+app = FastAPI(title="geneweb-py")
 
 # Mount a static directory (created on demand)
 static_dir = Path("static")
@@ -42,6 +42,21 @@ try:
     load_plugins(app, storage, cfg, repo_root=Path("."), templates=templates)
 except Exception:
     logging.exception("Failed to load plugins during module import")
+
+# Workaround: some routes (docs/openapi) may have been registered without a response_class
+# (for example if a plugin mistakenly registered a route with response_class=None).
+# FastAPI's OpenAPI generator expects a response class for these routes, so set them
+# explicitly if missing.
+for _r in list(app.routes):
+    try:
+        nm = getattr(_r, "name", None)
+        if nm == "openapi" and getattr(_r, "response_class", None) is None:
+            _r.response_class = JSONResponse
+        if nm in ("swagger_ui_html", "swagger_ui_redirect", "redoc_html") and getattr(_r, "response_class", None) is None:
+            _r.response_class = HTMLResponse
+    except Exception:
+        # be defensive; if any route introspection fails, skip it
+        pass
 
 
 
