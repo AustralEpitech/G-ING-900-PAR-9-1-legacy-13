@@ -111,4 +111,46 @@ Data is stored on disk in the `data/` directory by default:
 - `notes.json` — notes metadata (note bodies may be stored in `data/notes_d/*.txt`)
 
 You can safely stop the dev server; changes are written to disk via atomic writes.
+ 
+## Running tests
+
+This project includes unit and integration tests using pytest. Integration tests start a
+temporary `uvicorn` server and make real HTTP requests, so they require `uvicorn` and
+`requests` to be installed in your test environment.
+
+Install test dependencies (PowerShell):
+
+```powershell
+pip install -r requirements.txt
+pip install pytest requests uvicorn
+```
+
+Run the unit tests:
+
+```powershell
+pytest -q
+```
+
+Run the integration tests (they spawn a uvicorn process):
+
+```powershell
+# If pytest-django or other plugins auto-load in your environment, disable django plugin for this run
+pytest tests/integration -q -p no:django
+```
+
+Temporary alternative (disable plugin autoload for the current PowerShell session):
+
+```powershell
+$env:PYTEST_DISABLE_PLUGIN_AUTOLOAD='1'; pytest tests/integration -q; Remove-Item Env:PYTEST_DISABLE_PLUGIN_AUTOLOAD
+```
+
+CI tip: to make test runs consistent across machines, add a `pytest.ini` to the repo with:
+
+```ini
+[pytest]
+addopts = -p no:django
+```
+
+If tests fail, ensure you're running inside the project's virtual environment and that
+`fastapi`, `uvicorn`, `jinja2`, and `requests` are installed.
 
