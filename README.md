@@ -107,13 +107,32 @@ Example plugin is in `plugins/example_plugin/` — visit `/hello-plugin` when th
 By default the application persists data in a local SQLite database file located at `data/storage.db`.
 The DB uses a normalized schema with these main tables:
 
-- `persons` — explicit columns for first_name, surname, sex, birth_*/death_* and a `notes_json` list
-- `families` — parent links (husband_id / wife_id)
-- `family_children` — many-to-many rows connecting families to child ids
-- `notes` — metadata (id, title, text)
 
 Changes are written to `data/storage.db` atomically and the notes files are written atomically under `data/notes_d/`.
  
+
+## GEDCOM import / export
+
+This project includes a small GEDCOM importer/exporter to help migrate genealogical
+data into and out of the application. The CLI helper is `scripts/import_gedcom.py` and
+uses a conservative, dependency-free parser by default.
+
+Basic usage (PowerShell):
+
+```powershell
+# Import a GEDCOM into the app's data directory (creates/updates data/storage.db)
+python .\scripts\import_gedcom.py import --file C:\path\to\file.ged --data-dir data
+
+# Export the current DB to a GEDCOM file (parent directories are created automatically)
+python .\scripts\import_gedcom.py export --out C:\path\to\out.ged --data-dir data
+```
+
+Notes:
+- The importer stores GEDCOM record ids with a `gedcom:` prefix (for traceability). The importer
+	is idempotent: importing a file exported by the tool will not create duplicated entries.
+- File-backed notes under `data/notes_d/*.txt` continue to override DB notes as before.
+- Always back up your `data/storage.db` (or legacy JSON data) before running large imports.
+
 ## Running tests
 
 This project includes unit and integration tests using pytest. Integration tests start a
