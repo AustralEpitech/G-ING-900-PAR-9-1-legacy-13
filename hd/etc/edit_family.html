@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Edit family {{ family.id }} — geneweb-py{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1>Edit family {{ family.id }}</h1>
+    <form method="post" action="/family/{{ family.id }}/edit">
+      <div class="form-row">
+        <label>Husband:
+          <select name="husband_id">
+            <option value="">(none)</option>
+            {% for p in persons %}
+              <option value="{{ p.id }}" {% if p.id == family.husband_id %}selected{% endif %}>{{ p.first_name }} {{ p.surname }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Wife:
+          <select name="wife_id">
+            <option value="">(none)</option>
+            {% for p in persons %}
+              <option value="{{ p.id }}" {% if p.id == family.wife_id %}selected{% endif %}>{{ p.first_name }} {{ p.surname }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Children (hold ctrl / cmd to select multiple):
+          <select name="children_ids" multiple size="6">
+            {% for p in persons %}
+              <option value="{{ p.id }}" {% if p.id in family.children_ids %}selected{% endif %}>{{ p.first_name }} {{ p.surname }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+      <div class="form-row">
+        <button type="submit">Save</button>
+        <a class="button secondary" href="/family/{{ family.id }}">Cancel</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

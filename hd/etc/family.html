@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Family {{ family.id }} — geneweb-py{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1>Family {{ family.id }}</h1>
+    <p class="small-muted">Husband: {% if husband %}<a href="/person/{{ husband.id }}">{{ husband.first_name }} {{ husband.surname }}</a>{% else %} - {% endif %}</p>
+    <p class="small-muted">Wife: {% if wife %}<a href="/person/{{ wife.id }}">{{ wife.first_name }} {{ wife.surname }}</a>{% else %} - {% endif %}</p>
+
+    <h2>Children</h2>
+    <ul>
+      {% for c in children %}
+        {% if c %}
+          <li><a href="/person/{{ c.id }}">{{ c.first_name }} {{ c.surname }}</a></li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+
+    <div class="nav-links" style="margin-top:12px">
+      <a class="button" href="/family/{{ family.id }}/edit">Edit family</a>
+      <form method="post" action="/family/{{ family.id }}/delete" style="display:inline">
+        <button type="submit">Delete family</button>
+      </form>
+      <a class="button secondary" href="/">Back</a>
+    </div>
+  </div>
+{% endblock %}

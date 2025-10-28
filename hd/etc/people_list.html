@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}People — geneweb-py{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1>People</h1>
+    <p class="small-muted">All people in the database.</p>
+    <ul>
+      {% for p in persons %}
+        <li><a href="/person/{{ p.id }}">{{ p.first_name }} {{ p.surname }}</a></li>
+      {% endfor %}
+    </ul>
+    <p class="nav-links">
+      <a class="button" href="/person/create">Create person</a>
+      <a class="button secondary" href="/">Home</a>
+    </p>
+  </div>
+{% endblock %}
