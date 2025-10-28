@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Create person — geneweb-py{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1>Create person</h1>
+    <form method="post" action="/person/create">
+      <div class="form-row">
+        <label>First name: <input type="text" name="first_name" required></label>
+      </div>
+      <div class="form-row">
+        <label>Surname: <input type="text" name="surname" required></label>
+      </div>
+      <div class="form-row">
+        <label>Sex:
+          <select name="sex">
+            <option value="">(unknown)</option>
+            <option value="M">M</option>
+            <option value="F">F</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-row">
+        <button type="submit">Create</button>
+        <a class="button secondary" href="/">Cancel</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

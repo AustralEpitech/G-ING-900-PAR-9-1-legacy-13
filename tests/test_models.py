@@ -1,54 +1,33 @@
-import unittest
-from core.models import Person, Family
+import json
+from geneweb_py.models import Person, Family, Note, Event
 
 
-class TestPerson(unittest.TestCase):
-    def test_create_person(self):
-        """
-        Test creating a person with basic attributes.
-        """
-        person = Person(first_name="John", last_name="Doe", birth_date="1980-01-01", death_date="2020-01-01")
-        self.assertEqual(person.first_name, "John")
-        self.assertEqual(person.last_name, "Doe")
-        self.assertEqual(person.birth_date, "1980-01-01")
-        self.assertEqual(person.death_date, "2020-01-01")
-        self.assertEqual(person.parents, [])
-        self.assertEqual(person.children, [])
-
-    def test_person_repr(self):
-        """
-        Test the string representation of a person.
-        """
-        person = Person(first_name="Jane", last_name="Smith")
-        self.assertEqual(repr(person), "Person(Jane Smith)")
+def test_person_to_from_dict():
+    p = Person(first_name="Alice", surname="Smith", sex="F")
+    d = p.to_dict()
+    assert d["first_name"] == "Alice"
+    p2 = Person.from_dict(d)
+    assert p2.first_name == "Alice"
+    assert p2.surname == "Smith"
 
 
-class TestFamily(unittest.TestCase):
-    def test_create_family(self):
-        """
-        Test creating a family with a husband, wife, and children.
-        """
-        husband = Person(first_name="John", last_name="Doe")
-        wife = Person(first_name="Jane", last_name="Doe")
-        child1 = Person(first_name="Alice", last_name="Doe")
-        child2 = Person(first_name="Bob", last_name="Doe")
-
-        family = Family(husband=husband, wife=wife)
-        family.children.extend([child1, child2])
-
-        self.assertEqual(family.husband, husband)
-        self.assertEqual(family.wife, wife)
-        self.assertEqual(family.children, [child1, child2])
-
-    def test_family_repr(self):
-        """
-        Test the string representation of a family.
-        """
-        husband = Person(first_name="John", last_name="Doe")
-        wife = Person(first_name="Jane", last_name="Doe")
-        family = Family(husband=husband, wife=wife)
-        self.assertEqual(repr(family), "Family(Husband: John, Wife: Jane)")
+def test_family_to_from_dict():
+    f = Family(husband_id="h1", wife_id="w1", children_ids=["c1", "c2"])
+    d = f.to_dict()
+    assert d["husband_id"] == "h1"
+    f2 = Family.from_dict(d)
+    assert f2.children_ids == ["c1", "c2"]
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_note_to_from_dict():
+    n = Note(title="T", text="body")
+    d = n.to_dict()
+    assert d["title"] == "T"
+    n2 = Note.from_dict(d)
+    assert n2.text == "body"
+
+
+def test_event_dataclass():
+    e = Event(kind="birth", date="2000-01-01", place="Nowhere", note="x")
+    d = e.__dict__
+    assert d["kind"] == "birth"

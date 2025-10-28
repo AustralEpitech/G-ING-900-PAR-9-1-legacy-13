@@ -1,159 +1,156 @@
-# GeneWeb Python
+# geneweb-py
 
-This is a simplified proof of concept for the GeneWeb project, implemented in Python. It provides basic genealogical data management functionality, including the ability to add persons, create families, and list them via a command-line interface (CLI).
+This repository is a porting of the GeneWeb project from OCaml to Python.
 
----
+## Prerequisites
 
-## Features
+- Python 3.10+ installed and available on your PATH (the project was developed with Python 3.11).
+- Git (optional) if you cloned the repo.
 
-- **Person Management**:
-  - Add persons with attributes like first name, last name, birth date, and death date.
-  - List all persons in the database.
+## Quick start (Windows PowerShell)
 
-- **Family Management**:
-  - Create families with a husband, wife, and children.
-  - List all families in the database.
+1. Create and activate a venv
 
-- **Command-Line Interface**:
-  - Interact with the database using simple CLI commands.
-
----
-
-## Project Structure
-
-```
-core/
-├── __init__.py          # Core package initialization
-├── database.py          # In-memory database logic
-├── models.py            # Data models for persons and families
-cli/
-├── __init__.py          # CLI package initialization
-├── main.py              # Command-line interface logic
-tests/
-├── test_database.py     # Unit tests for database operations
-├── test_models.py       # Unit tests for data models
-requirements.txt         # Project dependencies
-README.md                # Project documentation
-LICENSE                  # License file
+```powershell
+python -m venv .venv
+# If you get an execution policy error when activating, run (in the same PowerShell session):
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+.\.venv\Scripts\Activate.ps1
 ```
 
----
+2. Install dependencies
 
-## Installation
-
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
-
-## Usage
-
-Run the CLI to interact with the database:
-
-### Add a person
-
-```bash
-python -m cli.main add_person --first_name Jean --surname Dupont --birth 1980-01-01 --sex M
+```powershell
+pip install -r requirements.txt
 ```
 
-All fields of the `Person` model are available as options (see `python -m cli.main add_person --help`).
+3. Run the development server
 
-### Add a family
-
-```bash
-python -m cli.main add_family --marriage 2000-06-15 --marriage_place Paris
+```powershell
+python -m uvicorn geneweb_py.web.app:app --reload --port 8000
 ```
 
-### Add a title to a person
+4. Open in your browser
 
-```bash
-python -m cli.main add_title --person_id 1 --name "Baron" --ident "baron" --place "Paris"
+- Main UI: http://127.0.0.1:8000/
+- People list: http://127.0.0.1:8000/people
+- Families list: http://127.0.0.1:8000/families
+- Notes UI: http://127.0.0.1:8000/notes
+- Example plugin: http://127.0.0.1:8000/hello-plugin (plugin template + CSS are included under `plugins/example_plugin`)
+
+### API
+
+- Programmatic JSON API endpoints are available under `/api`:
+	- `GET /api/person/{pid}` — fetch a person and immediate relations
+	- `GET /api/family/{fid}` — fetch a family and its members
+- OpenAPI documentation (Swagger UI) is available at: http://127.0.0.1:8000/docs
+- ReDoc documentation is available at: http://127.0.0.1:8000/redoc
+
+## Project layout (important files)
+
+- `geneweb_py/` - main Python package
+	- `web/app.py` - FastAPI app & routes
+	- `storage.py` - simple JSON/file-backed storage implementation
+	- `fs.py` - filesystem helpers (atomic writes, json load/save)
+	- `config.py` - small config loader (defaults + JSON file + env vars)
+	- `plugins.py` - plugin discovery/loader
+- `hd/etc/` - Jinja2 templates used by the app
+- `static/` - global static assets (CSS, client JS)
+- `plugins/` - local plugin packages (example_plugin included)
+- `data/` - runtime data: `persons.json`, `families.json`, `notes.json`, and `notes_d/`
+- `requirements.txt` - Python dependencies
+
+## Configuration
+
+The project uses `geneweb_py.config.load_config()` which supports:
+
+- Defaults (data in `data/`, templates in `hd/etc`, static in `static/`).
+- Overriding via a JSON config file referenced by the `GENEWEB_CONFIG` environment variable.
+- Direct environment variable overrides:
+	- `GENEWEB_DATA_DIR`
+	- `GENEWEB_TEMPLATES_DIR`
+	- `GENEWEB_STATIC_DIR`
+
+Example: run with a custom config file in PowerShell
+
+```powershell
+$env:GENEWEB_CONFIG = 'C:\path\to\myconfig.json'
+python -m uvicorn geneweb_py.web.app:app --reload --port 8000
 ```
 
-### Add a relation to a person
+`myconfig.json` (example):
 
-```bash
-python -m cli.main add_relation --person_id 1 --r_type "biological" --father_id 2 --mother_id 3
+```json
+{
+	"data_dir": "data",
+	"templates_dir": "hd/etc",
+	"static_dir": "static"
+}
 ```
 
-### Add a child to a family
+## Plugins
 
-```bash
-python -m cli.main add_personal_event --person_id 1 --name "Baptism" --date 1980-02-01 --place "Paris"
+Plugins live under the `plugins/` directory (or — in a future step — will be discoverable via entry-points).
+Each plugin is a normal Python package (folder with an `__init__.py`) and may implement these symbols:
+
+- `register(app, storage, config, templates=None)` — called at import time to register routes, template helpers, etc.
+- `on_startup(app)` — optional startup hook (registered with FastAPI startup event)
+- `on_shutdown(app)` — optional shutdown hook
+
+The loader also mounts any `static/` folder in a plugin under `/plugins/<name>/static` and adds plugin `templates/`
+folders to the Jinja2 loader search path.
+
+Example plugin is in `plugins/example_plugin/` — visit `/hello-plugin` when the server is running.
+
+## Data persistence
+
+Data is stored on disk in the `data/` directory by default:
+
+- `persons.json` — persons metadata
+- `families.json` — families metadata
+- `notes.json` — notes metadata (note bodies may be stored in `data/notes_d/*.txt`)
+
+You can safely stop the dev server; changes are written to disk via atomic writes.
+ 
+## Running tests
+
+This project includes unit and integration tests using pytest. Integration tests start a
+temporary `uvicorn` server and make real HTTP requests, so they require `uvicorn` and
+`requests` to be installed in your test environment.
+
+Install test dependencies (PowerShell):
+
+```powershell
+pip install -r requirements.txt
+pip install pytest requests uvicorn
 ```
 
-### Add an event to a family
+Run the unit tests:
 
-```bash
-python -m cli.main add_family_event --family_id 1 --name "Divorce" --date 2010-01-01 --place "Lyon"
+```powershell
+pytest -q
 ```
 
-### List all persons
+Run the integration tests (they spawn a uvicorn process):
 
-```bash
-python -m cli.main list_persons
+```powershell
+# If pytest-django or other plugins auto-load in your environment, disable django plugin for this run
+pytest tests/integration -q -p no:django
 ```
 
-### List all families
+Temporary alternative (disable plugin autoload for the current PowerShell session):
 
-```bash
-python -m cli.main list_families
+```powershell
+$env:PYTEST_DISABLE_PLUGIN_AUTOLOAD='1'; pytest tests/integration -q; Remove-Item Env:PYTEST_DISABLE_PLUGIN_AUTOLOAD
 ```
 
-### Display a person by their ID
+CI tip: to make test runs consistent across machines, add a `pytest.ini` to the repo with:
 
-```bash
-python -m cli.main get_person --person_id 1
+```ini
+[pytest]
+addopts = -p no:django
 ```
 
-Show all fields of the person corresponding to the given ID.
+If tests fail, ensure you're running inside the project's virtual environment and that
+`fastapi`, `uvicorn`, `jinja2`, and `requests` are installed.
 
-### Display a family by its ID
-
-```bash
-python -m cli.main get_family --family_id 1
-```
-
-Show all fields of the family corresponding to the given ID.
-
-### Add an Ascend to a person
-
-```bash
-python -m cli.main add_ascend --person_id 2 --parents_id 1 --consang 0.125
-```
-This will create an Ascend and attach it to the person with ID 2.
-
-### Add a Descend to a family
-
-```bash
-python -m cli.main add_descend --family_id 1 --children_ids 3 4
-```
-This will create a Descend and attach it to the family with ID 1.
-
----
-
-For each command, you can see all available options with `--help`, for example:
-
-```bash
-python -m cli.main add_person --help
-```
-
----
-
-## Testing
-
-Run the test suite to ensure everything works as expected:
-
-```bash
-python -m unittest discover -s tests
-```
-
----
-
-## Future Work
-
-- Add support for a web interface.
-- Extend the CLI with more advanced genealogical features.
-- Add support for importing/exporting GEDCOM files.

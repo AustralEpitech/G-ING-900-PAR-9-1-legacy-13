@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ person.first_name }} {{ person.surname }} — geneweb-py{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1>{{ person.first_name }} {{ person.surname }}</h1>
+    <p class="small-muted">Sex: {{ person.sex or '(unknown)' }}</p>
+
+    {% if spouses %}
+      <p><strong>Spouse(s):</strong>
+        {% for s in spouses %}
+          <a href="/person/{{ s.id }}">{{ s.first_name }} {{ s.surname }}</a>{% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </p>
+    {% endif %}
+
+    {% if parents %}
+      <p><strong>Parent(s):</strong>
+        {% for p in parents %}
+          <a href="/person/{{ p.id }}">{{ p.first_name }} {{ p.surname }}</a>{% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </p>
+    {% endif %}
+
+    {% if children %}
+      <p><strong>Children:</strong>
+        {% for c in children %}
+          <a href="/person/{{ c.id }}">{{ c.first_name }} {{ c.surname }}</a>{% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </p>
+    {% endif %}
+
+    {% if families %}
+      <p><strong>Family(ies):</strong>
+        {% for f in families %}
+          <a href="/family/{{ f.id }}">Family {{ f.id }}</a>{% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </p>
+    {% endif %}
+
+    <div class="nav-links" style="margin-top:12px">
+      <a class="button" href="/person/{{ person.id }}/edit">Edit person</a>
+      <form method="post" action="/person/{{ person.id }}/delete" style="display:inline">
+        <button type="submit">Delete person</button>
+      </form>
+      <a class="button secondary" href="/">Back</a>
+    </div>
+  </div>
+{% endblock %}

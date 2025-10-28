@@ -1,0 +1,9 @@
+.plugin-box { 
+  border: 1px solid #888; 
+  padding: 12px; 
+  background: #f6f8fa; 
+  max-width: 640px;
+  margin: 20px auto;
+  font-family: sans-serif;
+}
+.plugin-box h1 { color: #2b6cb0 }

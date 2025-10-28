@@ -1,6 +1,5 @@
-# Ignore Python cache files and folders
+/data/
 __pycache__/
-*.py[cod]
-
-# Ignore local database
-database.pkl
+*.pyc
+*.pyo
+.pytest_cache/
