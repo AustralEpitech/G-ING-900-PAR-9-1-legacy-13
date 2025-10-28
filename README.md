@@ -46,9 +46,6 @@ python -m uvicorn geneweb_py.web.app:app --reload --port 8000
 - OpenAPI documentation (Swagger UI) is available at: http://127.0.0.1:8000/docs
 - ReDoc documentation is available at: http://127.0.0.1:8000/redoc
 
-The app creates minimal sample data on first startup (two persons and a family) — this is done by the
-startup handler `ensure_sample_data()` in `geneweb_py/web/app.py`.
-
 ## Project layout (important files)
 
 - `geneweb_py/` - main Python package
