@@ -148,6 +148,41 @@ def select_base(request: Request, base: str = Form(...)):
     return RedirectResponse(url=f"/?b={base}", status_code=303)
 
 
+@app.post("/create_base")
+def create_base(request: Request, name: str = Form(...)):
+    """Create a new base directory under the configured data dir and redirect
+    to root with ?b=<name> so the middleware binds and sets the cookie.
+    """
+    # basic sanitization: use the final path name component and disallow path separators
+    safe_name = Path(name).name
+    if not safe_name or safe_name != name:
+        # invalid name or attempted traversal
+        return templates.TemplateResponse("choose_base.html", {"request": request, "bases": storage_manager.list_bases() if storage_manager else [], "error": "Invalid base name"})
+    try:
+        # Ensure storage manager exists and create the storage (initializes DB)
+        if storage_manager is None:
+            raise RuntimeError("StorageManager not initialized")
+        storage_manager.get_storage(safe_name)
+    except Exception:
+        logging.exception("Failed to create base %s", safe_name)
+        return templates.TemplateResponse(
+            "choose_base.html",
+            {"request": request, "bases": storage_manager.list_bases() if storage_manager else [], "error": "Failed to create base"},
+        )
+    # Redirect to root with ?b= so the middleware will set cookie and bind
+    return RedirectResponse(url=f"/?b={safe_name}", status_code=303)
+
+
+@app.get("/change_db")
+def change_db(request: Request):
+    """Clear the gw_base cookie for the client and redirect to root where
+    the choose-base page will be shown."""
+    resp = RedirectResponse(url="/", status_code=303)
+    # Delete cookie so subsequent requests won't pick a base
+    resp.delete_cookie(key="gw_base")
+    return resp
+
+
 @app.get("/people", response_class=HTMLResponse)
 def people_list(request: Request):
     persons = storage.list_persons()

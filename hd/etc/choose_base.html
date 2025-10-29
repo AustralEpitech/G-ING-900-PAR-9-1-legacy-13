@@ -16,8 +16,16 @@
     </form>
 
     <hr />
-    <p>If your database is not listed, create a directory under the configured data
-    directory and initialize it with a `storage.db` (this project will create one
-    automatically when you add content to a new base).</p>
+    <p>If your database is not listed, create a new base below.</p>
+
+    <form method="post" action="/create_base" class="mt-2">
+      <label for="new_base">Create new base</label>
+      <input id="new_base" name="name" placeholder="new-base-name" class="form-control" required />
+      <button type="submit" class="btn btn-secondary mt-1">Create</button>
+    </form>
+
+    <hr />
+    <p>New bases will be created under the configured data directory and a fresh
+    `storage.db` will be initialized when the base is first used.</p>
   </div>
 {% endblock %}
