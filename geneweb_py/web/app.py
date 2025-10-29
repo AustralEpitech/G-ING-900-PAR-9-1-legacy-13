@@ -4,8 +4,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 from ..storage import Storage
-from ..models import Person, Family
-from typing import List, Optional
+from ..models import Person, Family, CDate, Place, PersEvent
+from typing import List, Optional, Dict, Any
 from ..models import Note
 import logging
 from ..plugins import load_plugins
@@ -121,10 +121,47 @@ def create_person_form(request: Request):
 
 @app.post("/person/create")
 def create_person(
-    first_name: str = Form(...), surname: str = Form(...), sex: Optional[str] = Form(None)
+    first_name: str = Form(...),
+    surname: str = Form(...),
+    sex: Optional[str] = Form(None),
+    birth_date: Optional[str] = Form(None),
+    birth_place: Optional[str] = Form(None),
+    birth_note: Optional[str] = Form(None),
+    death_date: Optional[str] = Form(None),
+    death_place: Optional[str] = Form(None),
+    death_note: Optional[str] = Form(None),
+    pevents: Optional[str] = Form(None),
 ):
     logging.info("create_person called with first_name=%s, surname=%s, sex=%s", first_name, surname, sex)
     p = Person(first_name=first_name, surname=surname, sex=sex)
+    # parse optional structured fields from simple textual inputs
+    if birth_date:
+        p.birth_date = CDate.from_string(birth_date)
+    if birth_place:
+        p.birth_place = Place.from_simple(birth_place)
+    if birth_note:
+        p.birth_note = birth_note
+    if death_date:
+        p.death_date = CDate.from_string(death_date)
+    if death_place:
+        p.death_place = Place.from_simple(death_place)
+    if death_note:
+        p.death_note = death_note
+    # parse person events: accept multiline text where each line is
+    # "TYPE | DATE | PLACE | NOTE" (pipe-separated). DATE and PLACE optional.
+    if pevents:
+        evs: list[PersEvent] = []
+        for ln in pevents.splitlines():
+            ln = ln.strip()
+            if not ln:
+                continue
+            parts = [p.strip() for p in ln.split("|")]
+            kind = parts[0] if len(parts) > 0 else ""
+            date = CDate.from_string(parts[1]) if len(parts) > 1 and parts[1] else None
+            place = Place.from_simple(parts[2]) if len(parts) > 2 and parts[2] else None
+            note = parts[3] if len(parts) > 3 and parts[3] else None
+            evs.append(PersEvent(kind=kind, date=date, place=place, note=note))
+        p.pevents = evs
     try:
         storage.add_person(p)
         logging.info("Created person %s; persons now: %s", p.id, list(storage.persons.keys()))
@@ -144,15 +181,141 @@ def edit_person_form(request: Request, pid: str):
 
 
 @app.post("/person/{pid}/edit")
-def edit_person(pid: str, first_name: str = Form(...), surname: str = Form(...), sex: Optional[str] = Form(None)):
+def edit_person(
+    pid: str,
+    first_name: str = Form(...),
+    surname: str = Form(...),
+    sex: Optional[str] = Form(None),
+    birth_date: Optional[str] = Form(None),
+    birth_place: Optional[str] = Form(None),
+    birth_note: Optional[str] = Form(None),
+    death_date: Optional[str] = Form(None),
+    death_place: Optional[str] = Form(None),
+    death_note: Optional[str] = Form(None),
+    pevents: Optional[str] = Form(None),
+):
     p = storage.get_person(pid)
     if p is None:
         raise HTTPException(status_code=404, detail="Person not found")
     p.first_name = first_name
     p.surname = surname
     p.sex = sex
+    # parse optional structured fields
+    if birth_date is not None:
+        p.birth_date = CDate.from_string(birth_date)
+    if birth_place is not None:
+        p.birth_place = Place.from_simple(birth_place)
+    if birth_note is not None:
+        p.birth_note = birth_note
+    if death_date is not None:
+        p.death_date = CDate.from_string(death_date)
+    if death_place is not None:
+        p.death_place = Place.from_simple(death_place)
+    if death_note is not None:
+        p.death_note = death_note
+    # parse pevents if provided (replace existing list)
+    if pevents is not None:
+        evs: list[PersEvent] = []
+        for ln in pevents.splitlines():
+            ln = ln.strip()
+            if not ln:
+                continue
+            parts = [p.strip() for p in ln.split("|")]
+            kind = parts[0] if len(parts) > 0 else ""
+            date = CDate.from_string(parts[1]) if len(parts) > 1 and parts[1] else None
+            place = Place.from_simple(parts[2]) if len(parts) > 2 and parts[2] else None
+            note = parts[3] if len(parts) > 3 and parts[3] else None
+            evs.append(PersEvent(kind=kind, date=date, place=place, note=note))
+        p.pevents = evs
     storage.update_person(p)
     return RedirectResponse(url=f"/person/{pid}", status_code=303)
+
+
+### Minimal JSON API additions: create/update person
+@app.post("/api/person", status_code=201)
+def api_create_person(data: Dict[str, Any]):
+    # Accept JSON payload with simple textual fields for dates and places
+    first_name = data.get("first_name", "")
+    surname = data.get("surname", "")
+    sex = data.get("sex")
+    p = Person(first_name=first_name, surname=surname, sex=sex)
+    bd = data.get("birth_date")
+    if bd:
+        p.birth_date = CDate.from_string(bd)
+    bp = data.get("birth_place")
+    if bp:
+        p.birth_place = Place.from_simple(bp)
+    if data.get("birth_note"):
+        p.birth_note = data.get("birth_note")
+    # parse pevents from JSON - accept list of simple textual lines or list of dicts
+    if data.get("pevents"):
+        pe = []
+        for item in data.get("pevents"):
+            if isinstance(item, str):
+                parts = [x.strip() for x in item.split("|")]
+                kind = parts[0] if len(parts) > 0 else ""
+                date = CDate.from_string(parts[1]) if len(parts) > 1 and parts[1] else None
+                place = Place.from_simple(parts[2]) if len(parts) > 2 and parts[2] else None
+                note = parts[3] if len(parts) > 3 and parts[3] else None
+                pe.append(PersEvent(kind=kind, date=date, place=place, note=note))
+            elif isinstance(item, dict):
+                pe.append(PersEvent.from_dict(item))
+        p.pevents = pe
+    dd = data.get("death_date")
+    if dd:
+        p.death_date = CDate.from_string(dd)
+    dp = data.get("death_place")
+    if dp:
+        p.death_place = Place.from_simple(dp)
+    if data.get("death_note"):
+        p.death_note = data.get("death_note")
+    storage.add_person(p)
+    return p.to_dict()
+
+
+@app.put("/api/person/{pid}")
+def api_update_person(pid: str, data: Dict[str, Any]):
+    p = storage.get_person(pid)
+    if p is None:
+        raise HTTPException(status_code=404, detail="Person not found")
+    # update allowed fields
+    if "first_name" in data:
+        p.first_name = data.get("first_name")
+    if "surname" in data:
+        p.surname = data.get("surname")
+    if "sex" in data:
+        p.sex = data.get("sex")
+    if "birth_date" in data:
+        p.birth_date = CDate.from_string(data.get("birth_date")) if data.get("birth_date") else None
+    if "birth_place" in data:
+        p.birth_place = Place.from_simple(data.get("birth_place")) if data.get("birth_place") else None
+    if "birth_note" in data:
+        p.birth_note = data.get("birth_note")
+    if "death_date" in data:
+        p.death_date = CDate.from_string(data.get("death_date")) if data.get("death_date") else None
+    if "death_place" in data:
+        p.death_place = Place.from_simple(data.get("death_place")) if data.get("death_place") else None
+    if "death_note" in data:
+        p.death_note = data.get("death_note")
+    # pevents: replace list if provided
+    if "pevents" in data:
+        if data.get("pevents") is None:
+            p.pevents = []
+        else:
+            pe = []
+            for item in data.get("pevents"):
+                if isinstance(item, str):
+                    parts = [x.strip() for x in item.split("|")]
+                    kind = parts[0] if len(parts) > 0 else ""
+                    date = CDate.from_string(parts[1]) if len(parts) > 1 and parts[1] else None
+                    place = Place.from_simple(parts[2]) if len(parts) > 2 and parts[2] else None
+                    note = parts[3] if len(parts) > 3 and parts[3] else None
+                    pe.append(PersEvent(kind=kind, date=date, place=place, note=note))
+                elif isinstance(item, dict):
+                    pe.append(PersEvent.from_dict(item))
+            p.pevents = pe
+    storage.update_person(p)
+    return p.to_dict()
 
 
 @app.post("/person/{pid}/delete")
@@ -174,8 +337,23 @@ def create_family(
     husband_id: Optional[str] = Form(None),
     wife_id: Optional[str] = Form(None),
     children_ids: List[str] = Form([]),
+    fevents: Optional[str] = Form(None),
 ):
     f = Family(husband_id=husband_id or None, wife_id=wife_id or None, children_ids=children_ids)
+    # parse family events from multiline input (TYPE | DATE | PLACE | NOTE)
+    if fevents:
+        fes: list[PersEvent] = []
+        for ln in fevents.splitlines():
+            ln = ln.strip()
+            if not ln:
+                continue
+            parts = [p.strip() for p in ln.split("|")]
+            kind = parts[0] if len(parts) > 0 else ""
+            date = CDate.from_string(parts[1]) if len(parts) > 1 and parts[1] else None
+            place = Place.from_simple(parts[2]) if len(parts) > 2 and parts[2] else None
+            note = parts[3] if len(parts) > 3 and parts[3] else None
+            fes.append(PersEvent(kind=kind, date=date, place=place, note=note))
+        f.fevents = fes
     storage.add_family(f)
     return RedirectResponse(url=f"/family/{f.id}", status_code=303)
 
@@ -195,6 +373,7 @@ def edit_family(
     husband_id: Optional[str] = Form(None),
     wife_id: Optional[str] = Form(None),
     children_ids: List[str] = Form([]),
+    fevents: Optional[str] = Form(None),
 ):
     f = storage.get_family(fid)
     if f is None:
@@ -202,6 +381,19 @@ def edit_family(
     f.husband_id = husband_id or None
     f.wife_id = wife_id or None
     f.children_ids = children_ids
+    if fevents is not None:
+        fes: list[PersEvent] = []
+        for ln in fevents.splitlines():
+            ln = ln.strip()
+            if not ln:
+                continue
+            parts = [p.strip() for p in ln.split("|")]
+            kind = parts[0] if len(parts) > 0 else ""
+            date = CDate.from_string(parts[1]) if len(parts) > 1 and parts[1] else None
+            place = Place.from_simple(parts[2]) if len(parts) > 2 and parts[2] else None
+            note = parts[3] if len(parts) > 3 and parts[3] else None
+            fes.append(PersEvent(kind=kind, date=date, place=place, note=note))
+        f.fevents = fes
     storage.update_family(f)
     return RedirectResponse(url=f"/family/{fid}", status_code=303)
 

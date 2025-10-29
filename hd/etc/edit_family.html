@@ -35,6 +35,11 @@
         </label>
       </div>
       <div class="form-row">
+        <label>Family events (one per line: TYPE | DATE | PLACE | NOTE):
+          <textarea name="fevents" rows="6">{% for e in family.fevents %}{{ e.kind }} | {{ e.date.to_iso() if e.date else '' }} | {{ e.place.to_simple() if e.place else '' }} | {{ e.note or '' }}{% if not loop.last %}\n{% endif %}{% endfor %}</textarea>
+        </label>
+      </div>
+      <div class="form-row">
         <button type="submit">Save</button>
         <a class="button secondary" href="/family/{{ family.id }}">Cancel</a>
       </div>
