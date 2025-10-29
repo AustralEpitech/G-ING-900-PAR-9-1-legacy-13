@@ -43,9 +43,9 @@
         </label>
       </div>
       <div class="form-row">
-        <label>Events (one per row):</label>
+        <label>Events:</label>
         <div>
-          {% set rows = event_rows or 3 %}
+          {% set rows = event_rows or 1 %}
             {% for i in range(rows) %}
               <div class="event-row" style="margin-bottom:10px;padding:6px;border:1px solid #eee;border-radius:4px;">
                 <div style="margin-bottom:6px;font-weight:600">Event {{ loop.index }}</div>
@@ -54,12 +54,6 @@
                   <input type="text" name="pevent_date" placeholder="Date (e.g. 12 JAN 1900)" />
                   <input type="text" name="pevent_place" placeholder="Place" />
                   <input type="text" name="pevent_note" placeholder="Note" />
-                  <label style="margin-left:6px">Action:
-                    <select name="pevent_action">
-                      <option value="">Keep</option>
-                      <option value="remove">Remove</option>
-                    </select>
-                  </label>
                 </div>
               </div>
             {% endfor %}

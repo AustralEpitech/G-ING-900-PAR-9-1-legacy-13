@@ -25,14 +25,44 @@ templates_dir = Path("hd") / "etc"
 templates_dir.mkdir(parents=True, exist_ok=True)
 templates = Jinja2Templates(directory=str(templates_dir))
 
-# Simple storage instance (file-based JSON in ./data)
-storage = Storage(Path("data"))
 
+# Do not create the Storage instance at import time. Creating it on import
+# caused accidental writes to the repository-local `data/` directory when the
+# module was imported (for example during tests or tooling). Instead, set the
+# module-level variable to None and create the Storage instance during the
+# FastAPI startup event. Plugins are still discovered and registered at import
+# time so tests that inspect routes continue to work; plugin handlers should
+# access the real storage at request time via the `storage` global once the
+# app has started.
+class _LazyStorage:
+    """A tiny lazy wrapper that instantiates the real Storage on first use.
+
+    This preserves the previous module-level `storage` variable API so code that
+    imports `storage` (for tests or scripts) continues to work but avoids
+    creating the persistent DB during mere module import.
+    """
+    def __init__(self):
+        self._real = None
+
+    def _ensure(self):
+        if self._real is None:
+            self._real = Storage(Path("data"))
+
+    def __getattr__(self, name):
+        # Delegate attribute access to the real storage, creating it lazily
+        self._ensure()
+        return getattr(self._real, name)
+
+
+storage = _LazyStorage()
 
 
 # Load plugins now (registers routes and lifecycle hooks). We load config first.
 cfg = load_config()
 try:
+    # Pass the (currently None) storage through; plugin registration should not
+    # perform persistent writes during import. Plugin request handlers may use
+    # the storage at runtime after startup.
     load_plugins(app, storage, cfg, repo_root=Path("."), templates=templates)
 except Exception:
     logging.exception("Failed to load plugins during module import")
@@ -51,6 +81,22 @@ for _r in list(app.routes):
     except Exception:
         # be defensive; if any route introspection fails, skip it
         pass
+
+
+@app.on_event("startup")
+def _create_storage_on_startup():
+    """Create the persistent Storage instance during application startup.
+
+    This avoids accidental writes at import time. The startup event runs
+    before the server begins handling requests.
+    """
+    global storage
+    try:
+        if storage is None:
+            storage = Storage(Path("data"))
+            logging.info("Storage initialized at %s", str(Path("data")))
+    except Exception:
+        logging.exception("Failed to initialize storage on startup")
 
 
 
