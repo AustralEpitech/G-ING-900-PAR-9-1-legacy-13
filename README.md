@@ -1,6 +1,8 @@
 # geneweb-py
 
-This repository is a porting of the GeneWeb project from OCaml to Python.
+This repository is a porting of the GeneWeb project from OCaml to Python. The Python
+port aims to provide a compact, testable implementation with a small web UI and a
+JSON/HTTP API for programmatic access.
 
 ## Prerequisites
 
@@ -24,6 +26,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+
 3. Run the development server
 
 ```powershell
@@ -46,19 +49,6 @@ python -m uvicorn geneweb_py.web.app:app --reload --port 8000
 - OpenAPI documentation (Swagger UI) is available at: http://127.0.0.1:8000/docs
 - ReDoc documentation is available at: http://127.0.0.1:8000/redoc
 
-## Project layout (important files)
-
-- `geneweb_py/` - main Python package
-	- `web/app.py` - FastAPI app & routes
-	- `storage.py` - SQLite-backed storage implementation (normalized schema: persons, families, family_children, notes)
-	- `fs.py` - filesystem helpers (atomic writes, json load/save)
-	- `config.py` - small config loader (defaults + JSON file + env vars)
-	- `plugins.py` - plugin discovery/loader
-- `hd/etc/` - Jinja2 templates used by the app
-- `static/` - global static assets (CSS, client JS)
-- `plugins/` - local plugin packages (example_plugin included)
-- `data/` - runtime data: `persons.json`, `families.json`, `notes.json`, and `notes_d/`
-- `requirements.txt` - Python dependencies
 
 ## Configuration
 
@@ -90,7 +80,7 @@ python -m uvicorn geneweb_py.web.app:app --reload --port 8000
 
 ## Plugins
 
-Plugins live under the `plugins/` directory (or — in a future step — will be discoverable via entry-points).
+Plugins live under the `plugins/` directory.
 Each plugin is a normal Python package (folder with an `__init__.py`) and may implement these symbols:
 
 - `register(app, storage, config, templates=None)` — called at import time to register routes, template helpers, etc.
@@ -105,11 +95,9 @@ Example plugin is in `plugins/example_plugin/` — visit `/hello-plugin` when th
 ## Data persistence
 
 By default the application persists data in a local SQLite database file located at `data/storage.db`.
-The DB uses a normalized schema with these main tables:
-
+The storage layer uses a normalized set of tables for persons, families and children. To support richer GeneWeb-like semantics the app stores structured fields (dates, places, and per-person/family events) as JSON in dedicated columns. This allows the code to round-trip structured `CDate`, `Place` and `PersEvent` objects while keeping the DB schema compact.
 
 Changes are written to `data/storage.db` atomically and the notes files are written atomically under `data/notes_d/`.
- 
 
 ## GEDCOM import / export
 
@@ -135,43 +123,32 @@ Notes:
 
 ## Running tests
 
-This project includes unit and integration tests using pytest. Integration tests start a
-temporary `uvicorn` server and make real HTTP requests, so they require `uvicorn` and
-`requests` to be installed in your test environment.
+Unit and integration tests use `pytest`. Integration tests in this repository are implemented
+to run in-process (they call handlers directly or use FastAPI's TestClient) and therefore do
+not require a running `uvicorn` server in most cases. To run the full test suite:
 
-Install test dependencies (PowerShell):
+Install dependencies (PowerShell):
 
 ```powershell
-pip install -r requirements.txt
-pip install pytest requests uvicorn
+python -m pip install -r requirements.txt
+python -m pip install pytest
 ```
 
-Run the unit tests:
+Run all tests:
 
 ```powershell
 pytest -q
 ```
 
-Run the integration tests (they spawn a uvicorn process):
+Run only integration tests (if present):
 
 ```powershell
-# If pytest-django or other plugins auto-load in your environment, disable django plugin for this run
 pytest tests/integration -q -p no:django
 ```
 
-Temporary alternative (disable plugin autoload for the current PowerShell session):
-
-```powershell
-$env:PYTEST_DISABLE_PLUGIN_AUTOLOAD='1'; pytest tests/integration -q; Remove-Item Env:PYTEST_DISABLE_PLUGIN_AUTOLOAD
-```
-
-CI tip: to make test runs consistent across machines, add a `pytest.ini` to the repo with:
-
-```ini
-[pytest]
-addopts = -p no:django
-```
+If your environment auto-loads pytest plugins you don't want, you can temporarily disable
+plugin autoload for the command as shown above in the original README.
 
 If tests fail, ensure you're running inside the project's virtual environment and that
-`fastapi`, `uvicorn`, `jinja2`, and `requests` are installed.
+`fastapi`, `jinja2`, and testing dependencies are installed.
 
