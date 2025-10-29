@@ -267,7 +267,7 @@ msgstr "保存"
 
 #: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6
 msgid "Edit note"
-msgstr "死亡备注"
+msgstr "编辑笔记"
 
 #: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6 hd/etc/notes_list.html:7
 msgid "Create note"
