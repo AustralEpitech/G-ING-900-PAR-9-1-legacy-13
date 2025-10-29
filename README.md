@@ -121,6 +121,56 @@ Notes:
 - File-backed notes under `data/notes_d/*.txt` continue to override DB notes as before.
 - Always back up your `data/storage.db` (or legacy JSON data) before running large imports.
 
+## Relationship algorithms
+
+The Python port includes several relationship and kinship utilities inspired by
+the GeneWeb reference implementation. These helpers are small, importable
+functions you can call from scripts or a REPL.
+
+- `geneweb_py.sosa.sosa_ancestors(storage, root_id, max_depth=...)`
+	- Enumerates ancestors using Sosa (Ahnentafel) numbering. Returns a list of
+		dicts with sosa numbers, levels and parent Sosa links. Useful for
+		displaying ancestor tables.
+
+- `geneweb_py.relationship.shortest_path(storage, a_id, b_id, max_depth=None)`
+	- Returns a single shortest path (distance and list of person ids) between two
+		persons using parent/child and spouse edges. Uses a bidirectional BFS for
+		performance.
+
+- `geneweb_py.relationship.all_shortest_paths(storage, a_id, b_id, max_paths=100)`
+	- Enumerates all shortest paths (up to `max_paths`) between two persons.
+
+- `geneweb_py.consanguinity.relationship_and_links(storage, a_id, b_id, max_anc_depth=None)`
+	- Computes the coefficient of relationship (r) and returns a list of common
+		ancestors with their per-path counts and individual contributions. Handles
+		multiple ancestral paths (implex) and estimates ancestor inbreeding.
+
+- `geneweb_py.cousins.cousin_label(l1, l2)`
+	- Given generation distances to the MRCA (e.g. parent=1, grandparent=2),
+		returns a human-friendly label (sibling, aunt/uncle, 1st cousin once removed,
+		etc.) plus structured `(degree, removed)` values.
+
+Usage examples (Python):
+
+```python
+from geneweb_py.storage import Storage
+from geneweb_py.relationship import shortest_path
+from geneweb_py.consanguinity import relationship_and_links
+from geneweb_py.cousins import cousin_label
+
+store = Storage('data')
+dist, path = shortest_path(store, pid1, pid2)
+r, common = relationship_and_links(store, pid1, pid2, max_anc_depth=8)
+label, degree, removed = cousin_label(2, 3)  # e.g. 1st cousin once removed
+```
+
+Notes:
+- For consanguinity and ancestor enumeration prefer limiting `max_depth` to
+	6–10 generations for interactive use to avoid large combinatorics on dense
+	pedigrees.
+- All functions operate on the `Storage` API used by the app (see
+	`geneweb_py/storage.py`) and accept person ids as strings.
+
 ## Running tests
 
 Unit and integration tests use `pytest`. Integration tests in this repository are implemented
