@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
-from ..storage import Storage
+from .. import storage as storage_mod
 from ..models import Person, Family, CDate, Place, PersEvent
 from typing import List, Optional, Dict, Any
 from ..models import Note
@@ -34,35 +34,23 @@ templates = Jinja2Templates(directory=str(templates_dir))
 # time so tests that inspect routes continue to work; plugin handlers should
 # access the real storage at request time via the `storage` global once the
 # app has started.
-class _LazyStorage:
-    """A tiny lazy wrapper that instantiates the real Storage on first use.
+# `storage` is a proxy exported by the storage module. It will forward calls
+# to the Storage instance bound to the current request (via ContextVar) or to
+# a process-global default storage. We keep the name `storage` here for
+# backward-compatibility with existing code.
+storage = storage_mod.storage
 
-    This preserves the previous module-level `storage` variable API so code that
-    imports `storage` (for tests or scripts) continues to work but avoids
-    creating the persistent DB during mere module import.
-    """
-    def __init__(self):
-        self._real = None
-
-    def _ensure(self):
-        if self._real is None:
-            self._real = Storage(Path("data"))
-
-    def __getattr__(self, name):
-        # Delegate attribute access to the real storage, creating it lazily
-        self._ensure()
-        return getattr(self._real, name)
-
-
-storage = _LazyStorage()
+# StorageManager instance will be created at startup using the configured
+# data directory. It manages multiple bases (one Storage per base name).
+storage_manager: Optional[storage_mod.StorageManager] = None
 
 
 # Load plugins now (registers routes and lifecycle hooks). We load config first.
 cfg = load_config()
 try:
-    # Pass the (currently None) storage through; plugin registration should not
-    # perform persistent writes during import. Plugin request handlers may use
-    # the storage at runtime after startup.
+    # Pass the storage proxy through; plugin registration should not perform
+    # persistent writes during import. Plugin request handlers may use the
+    # real storage at runtime after startup (the proxy will forward calls).
     load_plugins(app, storage, cfg, repo_root=Path("."), templates=templates)
 except Exception:
     logging.exception("Failed to load plugins during module import")
@@ -84,25 +72,115 @@ for _r in list(app.routes):
 
 
 @app.on_event("startup")
-def _create_storage_on_startup():
-    """Create the persistent Storage instance during application startup.
+def _create_storage_manager_on_startup():
+    """Create the StorageManager during startup using the configured data dir.
 
-    This avoids accidental writes at import time. The startup event runs
-    before the server begins handling requests.
-    """
-    global storage
+    The manager allows handling multiple named bases (databases)."""
+    global storage_manager
     try:
-        if storage is None:
-            storage = Storage(Path("data"))
-            logging.info("Storage initialized at %s", str(Path("data")))
+        storage_manager = storage_mod.StorageManager(cfg.data_dir)
+        logging.info("StorageManager initialized at %s", str(cfg.data_dir))
     except Exception:
-        logging.exception("Failed to initialize storage on startup")
+        logging.exception("Failed to initialize StorageManager on startup")
+
+
+
+@app.middleware("http")
+async def bind_storage_middleware(request: Request, call_next):
+    """Bind a Storage to the current request based on query param `b` or
+    cookie `gw_base`. If `b` query param is present we also set a cookie on
+    the response so subsequent requests remember the choice (per-client).
+    """
+    token = None
+    base_name = None
+    try:
+        # prefer explicit query param (for temporary override + choice)
+        base_name = request.query_params.get("b") or request.cookies.get("gw_base")
+        if base_name and storage_manager is not None:
+            try:
+                s = storage_manager.get_storage(base_name)
+                token = storage_mod.bind_current_storage(s)
+            except Exception:
+                logging.exception("Failed to bind storage for base %s", base_name)
+                token = None
+    except Exception:
+        logging.exception("Error while determining storage for request")
+
+    # proceed with request handling
+    response = await call_next(request)
+
+    # If the base was provided as query param persist it in a cookie
+    if request.query_params.get("b"):
+        response.set_cookie(key="gw_base", value=request.query_params.get("b"), httponly=False)
+
+    # reset contextvar to previous state
+    if token is not None:
+        try:
+            storage_mod.CURRENT_STORAGE.reset(token)
+        except Exception:
+            # defensive: ignore reset errors
+            pass
+
+    return response
 
 
 
 @app.get("/", response_class=HTMLResponse)
 def welcome(request: Request):
+    # If the client hasn't chosen a base yet, present a selection page.
+    # The middleware will bind a Storage if cookie `gw_base` or query param `b`
+    # is present; use storage_mod.get_current_storage() to check.
+    current = storage_mod.get_current_storage()
+    if current is None:
+        # present available bases and a simple form to choose one
+        bases = storage_manager.list_bases() if storage_manager is not None else []
+        return templates.TemplateResponse("choose_base.html", {"request": request, "bases": bases})
     return templates.TemplateResponse("welcome.html", {"request": request})
+
+
+
+@app.post("/select_base")
+def select_base(request: Request, base: str = Form(...)):
+    """Handle base selection from the HTML form. Redirect using a query
+    parameter `b` which the middleware will persist as a cookie and bind the
+    per-request storage instance."""
+    # redirect to root with ?b=base so middleware binds and response will set cookie
+    return RedirectResponse(url=f"/?b={base}", status_code=303)
+
+
+@app.post("/create_base")
+def create_base(request: Request, name: str = Form(...)):
+    """Create a new base directory under the configured data dir and redirect
+    to root with ?b=<name> so the middleware binds and sets the cookie.
+    """
+    # basic sanitization: use the final path name component and disallow path separators
+    safe_name = Path(name).name
+    if not safe_name or safe_name != name:
+        # invalid name or attempted traversal
+        return templates.TemplateResponse("choose_base.html", {"request": request, "bases": storage_manager.list_bases() if storage_manager else [], "error": "Invalid base name"})
+    try:
+        # Ensure storage manager exists and create the storage (initializes DB)
+        if storage_manager is None:
+            raise RuntimeError("StorageManager not initialized")
+        storage_manager.get_storage(safe_name)
+    except Exception:
+        logging.exception("Failed to create base %s", safe_name)
+        return templates.TemplateResponse(
+            "choose_base.html",
+            {"request": request, "bases": storage_manager.list_bases() if storage_manager else [], "error": "Failed to create base"},
+        )
+    # Redirect to root with ?b= so the middleware will set cookie and bind
+    return RedirectResponse(url=f"/?b={safe_name}", status_code=303)
+
+
+@app.get("/change_db")
+def change_db(request: Request):
+    """Clear the gw_base cookie for the client and redirect to root where
+    the choose-base page will be shown."""
+    resp = RedirectResponse(url="/", status_code=303)
+    # Delete cookie so subsequent requests won't pick a base
+    resp.delete_cookie(key="gw_base")
+    return resp
 
 
 @app.get("/people", response_class=HTMLResponse)
