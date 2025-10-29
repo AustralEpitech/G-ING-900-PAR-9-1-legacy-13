@@ -342,7 +342,7 @@ msgstr "笔记 — geneweb-py"
 
 #: hd/etc/people_list.html:2
 msgid "People — geneweb-py"
-msgstr "笔记 — geneweb-py"
+msgstr "人物 — geneweb-py"
 
 #: hd/etc/people_list.html:6
 msgid "People"
