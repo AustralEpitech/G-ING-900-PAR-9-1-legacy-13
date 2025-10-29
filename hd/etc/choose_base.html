@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Choose a database — geneweb-py{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1>Choose a genealogy database</h1>
+    <p class="small-muted">Select the database you want to use for this browser session.</p>
+
+    <form method="post" action="/select_base" class="d-flex">
+      <select name="base" class="form-control">
+        {% for b in bases %}
+          <option value="{{ b }}">{{ b }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-primary ml-2">Open</button>
+    </form>
+
+    <hr />
+    <p>If your database is not listed, create a directory under the configured data
+    directory and initialize it with a `storage.db` (this project will create one
+    automatically when you add content to a new base).</p>
+  </div>
+{% endblock %}

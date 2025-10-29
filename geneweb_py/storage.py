@@ -16,6 +16,7 @@ import threading
 from .models import Person, Family, Note, CDate, Place, PersEvent
 import sqlite3
 import json
+import contextvars
 
 
 def _dict_to_json(obj: Any) -> str:
@@ -458,3 +459,97 @@ class Storage:
             self._save()
             return True
         return False
+
+
+# --- Request-scoped storage support -------------------------------------------------
+# A ContextVar holds the Storage instance bound to the current request (if any).
+CURRENT_STORAGE: contextvars.ContextVar[Optional["Storage"]] = contextvars.ContextVar(
+    "gw_current_storage", default=None
+)
+
+
+def bind_current_storage(s: Optional["Storage"]):
+    """Bind a Storage instance to the current context and return the token.
+
+    The caller should reset the ContextVar with the returned token when the
+    request handling finishes (or call CURRENT_STORAGE.set(None)).
+    """
+    return CURRENT_STORAGE.set(s)
+
+
+def get_current_storage() -> Optional["Storage"]:
+    return CURRENT_STORAGE.get()
+
+
+class StorageManager:
+    """Manage multiple Storage instances (one per database / base name).
+
+    Conventions:
+    - `root` is a directory containing subdirectories for each base.
+    - A base is an immediate subdirectory of `root` that contains a file
+      named `storage.db` (the sqlite DB used by Storage). When a new base is
+      requested and its directory does not exist, it will be created and a
+      fresh Storage instance will be initialized there.
+    """
+
+    def __init__(self, root: Path):
+        self.root = Path(root)
+        self.root.mkdir(parents=True, exist_ok=True)
+        self._lock = threading.RLock()
+        self._cache: Dict[str, Storage] = {}
+
+    def list_bases(self) -> List[str]:
+        """Return sorted list of available base names (subdirectories that look
+        like bases)."""
+        names: List[str] = []
+        try:
+            for p in sorted(self.root.iterdir()):
+                if p.is_dir() and (p / "storage.db").exists():
+                    names.append(p.name)
+        except Exception:
+            # If iteration fails, return empty list
+            return []
+        return names
+
+    def get_storage(self, name: str) -> Storage:
+        """Return a Storage instance for base `name`. Creates one lazily and
+        caches it for reuse within this process."""
+        with self._lock:
+            if name in self._cache:
+                return self._cache[name]
+            root = self.root / name
+            root.mkdir(parents=True, exist_ok=True)
+            s = Storage(root)
+            self._cache[name] = s
+            return s
+
+
+class _RequestStorageProxy:
+    """A transparent proxy that forwards attribute access to the Storage
+    instance bound to the current request (via CURRENT_STORAGE). If no
+    Storage is bound, it lazily creates a default Storage rooted at the
+    provided `default_root` path.
+    """
+
+    def __init__(self, default_root: Path):
+        self._default_root = Path(default_root)
+        self._default: Optional[Storage] = None
+
+    def _ensure_default(self):
+        if self._default is None:
+            self._default = Storage(self._default_root)
+
+    def __getattr__(self, name: str):
+        s = get_current_storage()
+        if s is not None:
+            return getattr(s, name)
+        # fallback to a process-global default storage (for tooling/tests)
+        self._ensure_default()
+        return getattr(self._default, name)
+
+
+# Export a process-global proxy named `storage` so existing code that does
+# `from ..storage import storage` keeps working. By default it uses the
+# `data/` directory in the current working directory.
+storage = _RequestStorageProxy(Path("data"))
+
