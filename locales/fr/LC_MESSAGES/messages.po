@@ -267,7 +267,7 @@ msgstr "Enregistrer"
 
 #: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6
 msgid "Edit note"
-msgstr "Note de décès"
+msgstr "Modifier la note"
 
 #: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6 hd/etc/notes_list.html:7
 msgid "Create note"
@@ -275,15 +275,15 @@ msgstr "Créer une note"
 
 #: hd/etc/edit_note.html:10
 msgid "Id (path-like, no .txt):"
-msgstr ""
+msgstr "Id (format chemin, sans .txt) :"
 
 #: hd/etc/edit_note.html:14
 msgid "Title:"
-msgstr ""
+msgstr "Titre :"
 
 #: hd/etc/edit_note.html:17
 msgid "Text:"
-msgstr ""
+msgstr "Texte :"
 
 #: hd/etc/edit_person.html:2 hd/etc/note_view.html:9
 msgid "Edit"
@@ -327,11 +327,11 @@ msgstr "Retour"
 
 #: hd/etc/note_view.html:11
 msgid "Delete"
-msgstr "Supprimer la famille"
+msgstr "Supprimer"
 
 #: hd/etc/note_view.html:13
 msgid "Back to notes"
-msgstr "Note de décès"
+msgstr "Retour aux notes"
 
 #: hd/etc/notes_list.html:2
 msgid "Notes — geneweb-py"
@@ -339,31 +339,31 @@ msgstr "Notes — geneweb-py"
 
 #: hd/etc/people_list.html:2
 msgid "People — geneweb-py"
-msgstr "Notes — geneweb-py"
+msgstr "Personnes — geneweb-py"
 
 #: hd/etc/people_list.html:6
 msgid "People"
-msgstr "Toutes les personnes"
+msgstr "Personnes"
 
 #: hd/etc/people_list.html:7
 msgid "All people in the database."
-msgstr "Toutes les familles dans la base de données."
+msgstr "Toutes les personnes dans la base de données."
 
 #: hd/etc/person.html:10
 msgid "Spouse(s):"
-msgstr ""
+msgstr "Conjoint(s) :"
 
 #: hd/etc/person.html:18
 msgid "Parent(s):"
-msgstr ""
+msgstr "Parent(s) :"
 
 #: hd/etc/person.html:26
 msgid "Birth"
-msgstr "Note de naissance"
+msgstr "Naissance"
 
 #: hd/etc/person.html:28 hd/etc/person.html:37
 msgid "Date:"
-msgstr ""
+msgstr "Date :"
 
 #: hd/etc/person.html:29 hd/etc/person.html:38
 msgid "Place:"
@@ -375,7 +375,7 @@ msgstr "Note"
 
 #: hd/etc/person.html:35
 msgid "Death"
-msgstr "Note de décès"
+msgstr "Décès"
 
 #: hd/etc/person.html:44
 msgid "Children:"
@@ -383,15 +383,15 @@ msgstr "Enfants"
 
 #: hd/etc/person.html:52
 msgid "Family(ies):"
-msgstr "Familles"
+msgstr "Famille(s) :"
 
 #: hd/etc/person.html:60
 msgid "Events"
-msgstr "Événements :"
+msgstr "Événements"
 
 #: hd/etc/person.html:76
 msgid "Delete person"
-msgstr "Créer une personne"
+msgstr "Supprimer la personne"
 
 #: hd/etc/welcome.html:2 hd/etc/welcome.html:6
 msgid "Welcome to geneweb-py"

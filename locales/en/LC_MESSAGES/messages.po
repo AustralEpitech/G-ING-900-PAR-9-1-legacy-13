@@ -267,7 +267,7 @@ msgstr "Save"
 
 #: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6
 msgid "Edit note"
-msgstr "Death note"
+msgstr "Edit note"
 
 #: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6 hd/etc/notes_list.html:7
 msgid "Create note"
@@ -275,15 +275,15 @@ msgstr "Create note"
 
 #: hd/etc/edit_note.html:10
 msgid "Id (path-like, no .txt):"
-msgstr ""
+msgstr "Id (path-like, no .txt):"
 
 #: hd/etc/edit_note.html:14
 msgid "Title:"
-msgstr ""
+msgstr "Title:"
 
 #: hd/etc/edit_note.html:17
 msgid "Text:"
-msgstr ""
+msgstr "Text:"
 
 #: hd/etc/edit_person.html:2 hd/etc/note_view.html:9
 msgid "Edit"
@@ -327,11 +327,11 @@ msgstr "Back"
 
 #: hd/etc/note_view.html:11
 msgid "Delete"
-msgstr "Delete family"
+msgstr "Delete"
 
 #: hd/etc/note_view.html:13
 msgid "Back to notes"
-msgstr "Death note"
+msgstr "Back to notes"
 
 #: hd/etc/notes_list.html:2
 msgid "Notes — geneweb-py"
@@ -343,7 +343,7 @@ msgstr "People — geneweb-py"
 
 #: hd/etc/people_list.html:6
 msgid "People"
-msgstr "All people"
+msgstr "People"
 
 #: hd/etc/people_list.html:7
 msgid "All people in the database."
@@ -351,11 +351,11 @@ msgstr "All people in the database."
 
 #: hd/etc/person.html:10
 msgid "Spouse(s):"
-msgstr ""
+msgstr "Spouse(s):"
 
 #: hd/etc/person.html:18
 msgid "Parent(s):"
-msgstr ""
+msgstr "Parent(s):"
 
 #: hd/etc/person.html:26
 msgid "Birth"
@@ -363,7 +363,7 @@ msgstr "Birth"
 
 #: hd/etc/person.html:28 hd/etc/person.html:37
 msgid "Date:"
-msgstr ""
+msgstr "Date:"
 
 #: hd/etc/person.html:29 hd/etc/person.html:38
 msgid "Place:"
@@ -383,11 +383,11 @@ msgstr "Children"
 
 #: hd/etc/person.html:52
 msgid "Family(ies):"
-msgstr "Families"
+msgstr "Family(ies):"
 
 #: hd/etc/person.html:60
 msgid "Events"
-msgstr "Events:"
+msgstr "Events"
 
 #: hd/etc/person.html:76
 msgid "Delete person"
