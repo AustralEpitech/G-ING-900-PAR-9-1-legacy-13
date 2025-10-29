@@ -16,6 +16,20 @@
       {% endfor %}
     </ul>
 
+    {% if family.fevents %}
+      <h2>Family events</h2>
+      <ul>
+        {% for e in family.fevents %}
+          <li>
+            <strong>{{ e.kind }}</strong>
+            {% if e.date %} — {{ e.date.to_iso() }}{% endif %}
+            {% if e.place %} — {{ e.place.to_simple() }}{% endif %}
+            {% if e.note %} — {{ e.note }}{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
     <div class="nav-links" style="margin-top:12px">
       <a class="button" href="/family/{{ family.id }}/edit">Edit family</a>
       <form method="post" action="/family/{{ family.id }}/delete" style="display:inline">

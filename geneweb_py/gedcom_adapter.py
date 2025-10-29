@@ -12,7 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Dict, Any, List, Tuple, Optional
 from .storage import Storage
-from .models import Person, Family, Event
+from .models import Person, Family, CDate, Place, PersEvent
 import re
 
 
@@ -122,18 +122,28 @@ def import_gedcom(file_path: str | Path, storage: Storage) -> Dict[str, str]:
         # We'll look for lines 'BIRT' and then 'DATE' in subsequent tags; as a simple heuristic, try tags 'BIRT' 'DATE' or 'DATE' with context missing.
         # Look for tags with keys like 'DATE' and 'PLAC' and hope they refer to birth/death; if both exist we prefer birth if BIRT present.
         if "BIRT" in tags:
-            # find following DATE and PLAC values (heuristic)
-            # In our flattened parser we likely have 'DATE' entries; prefer first
             date = tags.get("DATE", [None])[0]
             place = tags.get("PLAC", [None])[0]
-            birth = Event(kind="birth", date=date, place=place)
+            birth = PersEvent(kind="birth", date=CDate.from_string(date), place=Place.from_simple(place), note=None)
         if "DEAT" in tags or "DEATH" in tags:
             date = tags.get("DATE", [None])[0]
             place = tags.get("PLAC", [None])[0]
-            death = Event(kind="death", date=date, place=place)
+            death = PersEvent(kind="death", date=CDate.from_string(date), place=Place.from_simple(place), note=None)
         # Create person with gedcom-prefixed id for traceability
         person_id = gid
-        person = Person(id=person_id, first_name=given, surname=surname, sex=sex, birth=birth, death=death)
+        # map sex to single-letter code if available
+        sex_code = sex if sex in ("M", "F", "N") else (sex and sex.strip())
+        # create Person using structured fields
+        person = Person(id=person_id, first_name=given, surname=surname, sex=sex_code)
+        if birth:
+            person.pevents.append(birth)
+            # also set birth_date/place for convenience
+            person.birth_date = birth.date
+            person.birth_place = birth.place
+        if death:
+            person.pevents.append(death)
+            person.death_date = death.date
+            person.death_place = death.place
         storage.add_person(person)
         id_map[gid] = person.id
     # Second pass: create families
@@ -178,18 +188,26 @@ def export_gedcom(storage: Storage, out_path: str | Path) -> None:
         lines.append(f"1 NAME {name}")
         if p.sex:
             lines.append(f"1 SEX {p.sex}")
-        if p.birth:
+        if p.birth_date or p.birth_place:
             lines.append("1 BIRT")
-            if p.birth.date:
-                lines.append(f"2 DATE {p.birth.date}")
-            if p.birth.place:
-                lines.append(f"2 PLAC {p.birth.place}")
-        if p.death:
+            if p.birth_date:
+                d = p.birth_date.to_iso() if hasattr(p.birth_date, "to_iso") else None
+                if d:
+                    lines.append(f"2 DATE {d}")
+            if p.birth_place:
+                sp = p.birth_place.to_simple() if hasattr(p.birth_place, "to_simple") else None
+                if sp:
+                    lines.append(f"2 PLAC {sp}")
+        if p.death_date or p.death_place:
             lines.append("1 DEAT")
-            if p.death.date:
-                lines.append(f"2 DATE {p.death.date}")
-            if p.death.place:
-                lines.append(f"2 PLAC {p.death.place}")
+            if p.death_date:
+                d = p.death_date.to_iso() if hasattr(p.death_date, "to_iso") else None
+                if d:
+                    lines.append(f"2 DATE {d}")
+            if p.death_place:
+                sp = p.death_place.to_simple() if hasattr(p.death_place, "to_simple") else None
+                if sp:
+                    lines.append(f"2 PLAC {sp}")
     # families
     for f in storage.families.values():
         gid = f.id

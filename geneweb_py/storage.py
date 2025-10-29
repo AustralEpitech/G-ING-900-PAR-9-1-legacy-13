@@ -13,7 +13,7 @@ from typing import Dict, Optional, List, Set, Iterable, Any
 from .fs import atomic_write_text, read_text, normalize_note_id
 from pathlib import Path
 import threading
-from .models import Person, Family, Note
+from .models import Person, Family, Note, CDate, Place, PersEvent
 import sqlite3
 import json
 
@@ -50,41 +50,41 @@ class Storage:
 
     def _ensure_tables(self) -> None:
         cur = self._conn.cursor()
-        # Normalized schema: persons columns, families and children, notes table
-        cur.execute(
-            """CREATE TABLE IF NOT EXISTS persons(
+        # New schema: use JSON columns for structured fields (pevents, places)
+        # and normalized columns for commonly queried fields.
+        # Create missing tables if they do not already exist — do NOT drop existing tables
+        cur.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS persons(
                 id TEXT PRIMARY KEY,
                 first_name TEXT,
                 surname TEXT,
                 sex TEXT,
                 birth_date TEXT,
-                birth_place TEXT,
+                birth_place_json TEXT,
                 birth_note TEXT,
                 death_date TEXT,
-                death_place TEXT,
+                death_place_json TEXT,
                 death_note TEXT,
+                pevents_json TEXT,
                 notes_json TEXT
-            )"""
-        )
-        cur.execute(
-            """CREATE TABLE IF NOT EXISTS families(
+            );
+            CREATE TABLE IF NOT EXISTS families(
                 id TEXT PRIMARY KEY,
                 husband_id TEXT,
-                wife_id TEXT
-            )"""
-        )
-        cur.execute(
-            """CREATE TABLE IF NOT EXISTS family_children(
+                wife_id TEXT,
+                fevents_json TEXT
+            );
+            CREATE TABLE IF NOT EXISTS family_children(
                 family_id TEXT,
                 child_id TEXT
-            )"""
-        )
-        cur.execute(
-            """CREATE TABLE IF NOT EXISTS notes(
+            );
+            CREATE TABLE IF NOT EXISTS notes(
                 id TEXT PRIMARY KEY,
                 title TEXT,
                 text TEXT
-            )"""
+            );
+            """
         )
         self._conn.commit()
 
@@ -95,47 +95,59 @@ class Storage:
         self.notes: Dict[str, Note] = {}
 
         cur = self._conn.cursor()
-        # Load persons from normalized columns
+        # Load persons from normalized + JSON columns
         cur.execute(
-            "SELECT id, first_name, surname, sex, birth_date, birth_place, birth_note, death_date, death_place, death_note, notes_json FROM persons"
+            "SELECT id, first_name, surname, sex, birth_date, birth_place_json, birth_note, death_date, death_place_json, death_note, pevents_json, notes_json FROM persons"
         )
         for row in cur.fetchall():
             try:
-                d = {
-                    "id": row["id"],
-                    "first_name": row["first_name"] or "",
-                    "surname": row["surname"] or "",
-                    "sex": row["sex"],
-                    "birth": None,
-                    "death": None,
-                    "notes": [],
-                }
-                if row["birth_date"] or row["birth_place"] or row["birth_note"]:
-                    d["birth"] = {
-                        "kind": "birth",
-                        "date": row["birth_date"],
-                        "place": row["birth_place"],
-                        "note": row["birth_note"],
-                    }
-                if row["death_date"] or row["death_place"] or row["death_note"]:
-                    d["death"] = {
-                        "kind": "death",
-                        "date": row["death_date"],
-                        "place": row["death_place"],
-                        "note": row["death_note"],
-                    }
+                notes_list = []
                 if row["notes_json"]:
                     try:
-                        d["notes"] = json.loads(row["notes_json"])
+                        notes_list = json.loads(row["notes_json"])
                     except Exception:
-                        d["notes"] = []
-                p = Person.from_dict(d)
+                        notes_list = []
+                # parse birth/death places as structured Place if present
+                birth_place = None
+                if row["birth_place_json"]:
+                    try:
+                        birth_place = Place.from_dict(json.loads(row["birth_place_json"]))
+                    except Exception:
+                        birth_place = None
+                death_place = None
+                if row["death_place_json"]:
+                    try:
+                        death_place = Place.from_dict(json.loads(row["death_place_json"]))
+                    except Exception:
+                        death_place = None
+                # parse pevents
+                pevents = []
+                if row["pevents_json"]:
+                    try:
+                        evs = json.loads(row["pevents_json"]) or []
+                        pevents = [PersEvent.from_dict(e) for e in evs]
+                    except Exception:
+                        pevents = []
+                p = Person(
+                    id=row["id"],
+                    first_name=row["first_name"] or "",
+                    surname=row["surname"] or "",
+                    sex=row["sex"],
+                    birth_date=CDate.from_string(row["birth_date"]) if row["birth_date"] else None,
+                    birth_place=birth_place,
+                    birth_note=row["birth_note"],
+                    death_date=CDate.from_string(row["death_date"]) if row["death_date"] else None,
+                    death_place=death_place,
+                    death_note=row["death_note"],
+                    pevents=pevents,
+                    notes=notes_list,
+                )
                 self.persons[p.id] = p
             except Exception:
                 continue
 
         # Load families and their children
-        cur.execute("SELECT id, husband_id, wife_id FROM families")
+        cur.execute("SELECT id, husband_id, wife_id, fevents_json FROM families")
         for row in cur.fetchall():
             try:
                 fid = row["id"]
@@ -143,12 +155,18 @@ class Storage:
                 cur2 = self._conn.cursor()
                 cur2.execute("SELECT child_id FROM family_children WHERE family_id = ?", (fid,))
                 children = [r["child_id"] for r in cur2.fetchall()]
+                fevents_list = []
+                if row.get("fevents_json"):
+                    try:
+                        fevents_list = json.loads(row["fevents_json"]) or []
+                    except Exception:
+                        fevents_list = []
                 d = {
                     "id": fid,
                     "husband_id": row["husband_id"],
                     "wife_id": row["wife_id"],
                     "children_ids": children,
-                    "events": [],
+                    "fevents": fevents_list,
                 }
                 fa = Family.from_dict(d)
                 self.families[fa.id] = fa
@@ -187,29 +205,31 @@ class Storage:
         # Acquire lock to avoid concurrent sqlite access from different threads
         with self._lock:
             cur = self._conn.cursor()
-        # Replace persons (normalized columns)
+        # Replace persons (normalized + JSON columns)
         cur.execute("DELETE FROM persons")
         for p in self.persons.values():
-            birth_date = p.birth.date if p.birth else None
-            birth_place = p.birth.place if p.birth else None
-            birth_note = p.birth.note if p.birth else None
-            death_date = p.death.date if p.death else None
-            death_place = p.death.place if p.death else None
-            death_note = p.death.note if p.death else None
+            birth_date = p.birth_date.to_iso() if p.birth_date else None
+            birth_place_json = json.dumps(p.birth_place.to_dict(), ensure_ascii=False) if p.birth_place else None
+            birth_note = p.birth_note if getattr(p, "birth_note", None) else None
+            death_date = p.death_date.to_iso() if p.death_date else None
+            death_place_json = json.dumps(p.death_place.to_dict(), ensure_ascii=False) if p.death_place else None
+            death_note = p.death_note if getattr(p, "death_note", None) else None
+            pevents_json = json.dumps([e.to_dict() for e in p.pevents], ensure_ascii=False) if p.pevents else None
             notes_json = json.dumps(p.notes, ensure_ascii=False) if p.notes else None
             cur.execute(
-                "INSERT INTO persons(id, first_name, surname, sex, birth_date, birth_place, birth_note, death_date, death_place, death_note, notes_json) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO persons(id, first_name, surname, sex, birth_date, birth_place_json, birth_note, death_date, death_place_json, death_note, pevents_json, notes_json) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     p.id,
                     p.first_name,
                     p.surname,
                     p.sex,
                     birth_date,
-                    birth_place,
+                    birth_place_json,
                     birth_note,
                     death_date,
-                    death_place,
+                    death_place_json,
                     death_note,
+                    pevents_json,
                     notes_json,
                 ),
             )
@@ -218,9 +238,10 @@ class Storage:
         cur.execute("DELETE FROM family_children")
         cur.execute("DELETE FROM families")
         for fa in self.families.values():
+            fevents_json = json.dumps([e.to_dict() for e in getattr(fa, "fevents", [])], ensure_ascii=False) if getattr(fa, "fevents", None) else None
             cur.execute(
-                "INSERT INTO families(id, husband_id, wife_id) VALUES(?, ?, ?)",
-                (fa.id, fa.husband_id, fa.wife_id),
+                "INSERT INTO families(id, husband_id, wife_id, fevents_json) VALUES(?, ?, ?, ?)",
+                (fa.id, fa.husband_id, fa.wife_id, fevents_json),
             )
             # insert children rows
             for cid in fa.children_ids:

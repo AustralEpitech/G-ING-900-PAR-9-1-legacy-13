@@ -22,6 +22,24 @@
       </p>
     {% endif %}
 
+    {% if person.birth_date or person.birth_place or person.birth_note %}
+      <h2>Birth</h2>
+      <p>
+        {% if person.birth_date %}<strong>Date:</strong> {{ person.birth_date.to_iso() }}<br>{% endif %}
+        {% if person.birth_place %}<strong>Place:</strong> {{ person.birth_place.to_simple() }}<br>{% endif %}
+        {% if person.birth_note %}<strong>Note:</strong> {{ person.birth_note }}{% endif %}
+      </p>
+    {% endif %}
+
+    {% if person.death_date or person.death_place or person.death_note %}
+      <h2>Death</h2>
+      <p>
+        {% if person.death_date %}<strong>Date:</strong> {{ person.death_date.to_iso() }}<br>{% endif %}
+        {% if person.death_place %}<strong>Place:</strong> {{ person.death_place.to_simple() }}<br>{% endif %}
+        {% if person.death_note %}<strong>Note:</strong> {{ person.death_note }}{% endif %}
+      </p>
+    {% endif %}
+
     {% if children %}
       <p><strong>Children:</strong>
         {% for c in children %}
@@ -36,6 +54,20 @@
           <a href="/family/{{ f.id }}">Family {{ f.id }}</a>{% if not loop.last %}, {% endif %}
         {% endfor %}
       </p>
+    {% endif %}
+
+    {% if person.pevents %}
+      <h2>Events</h2>
+      <ul>
+        {% for e in person.pevents %}
+          <li>
+            <strong>{{ e.kind }}</strong>
+            {% if e.date %} — {{ e.date.to_iso() }}{% endif %}
+            {% if e.place %} — {{ e.place.to_simple() }}{% endif %}
+            {% if e.note %} — {{ e.note }}{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
     {% endif %}
 
     <div class="nav-links" style="margin-top:12px">

@@ -21,6 +21,53 @@
         </label>
       </div>
       <div class="form-row">
+        <label>Birth date: <input type="text" name="birth_date" value="{{ person.birth_date.to_iso() if person.birth_date else '' }}" placeholder="e.g. 1900 or 12 JAN 1900"></label>
+      </div>
+      <div class="form-row">
+        <label>Birth place: <input type="text" name="birth_place" value="{{ person.birth_place.to_simple() if person.birth_place else '' }}" placeholder="e.g. Town, County"></label>
+      </div>
+      <div class="form-row">
+        <label>Birth note:
+          <textarea name="birth_note" rows="2" placeholder="Optional notes about birth">{{ person.birth_note or '' }}</textarea>
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Death date: <input type="text" name="death_date" value="{{ person.death_date.to_iso() if person.death_date else '' }}" placeholder="e.g. 1980 or 10 MAY 1980"></label>
+      </div>
+      <div class="form-row">
+        <label>Death place: <input type="text" name="death_place" value="{{ person.death_place.to_simple() if person.death_place else '' }}" placeholder="e.g. Town, County"></label>
+      </div>
+      <div class="form-row">
+        <label>Death note:
+          <textarea name="death_note" rows="2" placeholder="Optional notes about death">{{ person.death_note or '' }}</textarea>
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Events:</label>
+        <div>
+          {% set rows = event_rows or 3 %}
+          {% for i in range(rows) %}
+            {% set ev = person.pevents[i] if i < person.pevents|length else None %}
+            <div class="event-row" style="margin-bottom:10px;padding:6px;border:1px solid #eee;border-radius:4px;">
+              <div style="margin-bottom:6px;font-weight:600">Event {{ loop.index }}</div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <input type="text" name="pevent_kind" placeholder="Type (e.g. BAPTISM)" value="{{ ev.kind if ev else '' }}" />
+                <input type="text" name="pevent_date" placeholder="Date (e.g. 12 JAN 1900)" value="{{ ev.date.to_iso() if ev and ev.date else '' }}" />
+                <input type="text" name="pevent_place" placeholder="Place" value="{{ ev.place.to_simple() if ev and ev.place else '' }}" />
+                <input type="text" name="pevent_note" placeholder="Note" value="{{ ev.note if ev else '' }}" />
+                <label style="margin-left:6px">Action:
+                  <select name="pevent_action">
+                    <option value="">Keep</option>
+                    <option value="remove">Remove</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          {% endfor %}
+          <p><a href="/person/{{ person.id }}/edit?event_rows={{ rows + 1 }}">Add event</a></p>
+        </div>
+      </div>
+      <div class="form-row">
         <button type="submit">Save</button>
         <a class="button secondary" href="/person/{{ person.id }}">Cancel</a>
       </div>

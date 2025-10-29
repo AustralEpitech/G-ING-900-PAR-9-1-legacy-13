@@ -1,5 +1,5 @@
 import json
-from geneweb_py.models import Person, Family, Note, Event
+from geneweb_py.models import Person, Family, Note, PersEvent, CDate, Place
 
 
 def test_person_to_from_dict():
@@ -28,6 +28,8 @@ def test_note_to_from_dict():
 
 
 def test_event_dataclass():
-    e = Event(kind="birth", date="2000-01-01", place="Nowhere", note="x")
-    d = e.__dict__
+    e = PersEvent(kind="birth", date=CDate.from_string("2000-01-01"), place=Place.from_simple("Nowhere"), note="x")
+    d = e.to_dict()
     assert d["kind"] == "birth"
+    assert d["date"]["year"] == 2000
+    assert d["place"]["other"] == "Nowhere"
