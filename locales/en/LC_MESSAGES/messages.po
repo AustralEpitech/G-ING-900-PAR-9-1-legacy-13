@@ -52,15 +52,15 @@ msgstr "English"
 
 #: hd/etc/base.html:22
 msgid "Français"
-msgstr "Français"
+msgstr "French"
 
 #: hd/etc/base.html:23
 msgid "Español"
-msgstr "Español"
+msgstr "Spanish"
 
 #: hd/etc/base.html:24
 msgid "中文"
-msgstr "中文"
+msgstr "Chinese"
 
 #: hd/etc/choose_base.html:2
 msgid "Choose a database — geneweb-py"
@@ -266,7 +266,6 @@ msgid "Save"
 msgstr "Save"
 
 #: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6
-#, fuzzy
 msgid "Edit note"
 msgstr "Death note"
 
@@ -327,12 +326,10 @@ msgid "Back"
 msgstr "Back"
 
 #: hd/etc/note_view.html:11
-#, fuzzy
 msgid "Delete"
 msgstr "Delete family"
 
 #: hd/etc/note_view.html:13
-#, fuzzy
 msgid "Back to notes"
 msgstr "Death note"
 
@@ -341,17 +338,14 @@ msgid "Notes — geneweb-py"
 msgstr "Notes — geneweb-py"
 
 #: hd/etc/people_list.html:2
-#, fuzzy
 msgid "People — geneweb-py"
 msgstr "Notes — geneweb-py"
 
 #: hd/etc/people_list.html:6
-#, fuzzy
 msgid "People"
 msgstr "All people"
 
 #: hd/etc/people_list.html:7
-#, fuzzy
 msgid "All people in the database."
 msgstr "All families in the database."
 
@@ -364,7 +358,6 @@ msgid "Parent(s):"
 msgstr ""
 
 #: hd/etc/person.html:26
-#, fuzzy
 msgid "Birth"
 msgstr "Birth note"
 
@@ -373,37 +366,30 @@ msgid "Date:"
 msgstr ""
 
 #: hd/etc/person.html:29 hd/etc/person.html:38
-#, fuzzy
 msgid "Place:"
 msgstr "Place"
 
 #: hd/etc/person.html:30 hd/etc/person.html:39
-#, fuzzy
 msgid "Note:"
 msgstr "Note"
 
 #: hd/etc/person.html:35
-#, fuzzy
 msgid "Death"
 msgstr "Death note"
 
 #: hd/etc/person.html:44
-#, fuzzy
 msgid "Children:"
 msgstr "Children"
 
 #: hd/etc/person.html:52
-#, fuzzy
 msgid "Family(ies):"
 msgstr "Families"
 
 #: hd/etc/person.html:60
-#, fuzzy
 msgid "Events"
 msgstr "Events:"
 
 #: hd/etc/person.html:76
-#, fuzzy
 msgid "Delete person"
 msgstr "Create person"
 

@@ -266,7 +266,6 @@ msgid "Save"
 msgstr "保存"
 
 #: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6
-#, fuzzy
 msgid "Edit note"
 msgstr "死亡备注"
 
@@ -276,19 +275,16 @@ msgstr "创建笔记"
 
 #: hd/etc/edit_note.html:10
 #. Auto-filled draft translation
-#, fuzzy
 msgid "Id (path-like, no .txt):"
 msgstr "Id (path-like, no .txt):"
 
 #: hd/etc/edit_note.html:14
 #. Auto-filled draft translation
-#, fuzzy
 msgid "Title:"
 msgstr "Title:"
 
 #: hd/etc/edit_note.html:17
 #. Auto-filled draft translation
-#, fuzzy
 msgid "Text:"
 msgstr "Text:"
 
@@ -333,12 +329,10 @@ msgid "Back"
 msgstr "返回"
 
 #: hd/etc/note_view.html:11
-#, fuzzy
 msgid "Delete"
 msgstr "删除家庭"
 
 #: hd/etc/note_view.html:13
-#, fuzzy
 msgid "Back to notes"
 msgstr "死亡备注"
 
@@ -347,75 +341,61 @@ msgid "Notes — geneweb-py"
 msgstr "笔记 — geneweb-py"
 
 #: hd/etc/people_list.html:2
-#, fuzzy
 msgid "People — geneweb-py"
 msgstr "笔记 — geneweb-py"
 
 #: hd/etc/people_list.html:6
-#, fuzzy
 msgid "People"
 msgstr "所有人物"
 
 #: hd/etc/people_list.html:7
-#, fuzzy
 msgid "All people in the database."
 msgstr "数据库中的所有家族。"
 
 #: hd/etc/person.html:10
 #. Auto-filled draft translation
-#, fuzzy
 msgid "Spouse(s):"
 msgstr "Spouse(s):"
 
 #: hd/etc/person.html:18
 #. Auto-filled draft translation
-#, fuzzy
 msgid "Parent(s):"
 msgstr "Parent(s):"
 
 #: hd/etc/person.html:26
-#, fuzzy
 msgid "Birth"
 msgstr "出生备注"
 
 #: hd/etc/person.html:28 hd/etc/person.html:37
 #. Auto-filled draft translation
-#, fuzzy
 msgid "Date:"
 msgstr "Date:"
 
 #: hd/etc/person.html:29 hd/etc/person.html:38
-#, fuzzy
 msgid "Place:"
 msgstr "地点"
 
 #: hd/etc/person.html:30 hd/etc/person.html:39
-#, fuzzy
 msgid "Note:"
 msgstr "备注"
 
 #: hd/etc/person.html:35
-#, fuzzy
 msgid "Death"
 msgstr "死亡备注"
 
 #: hd/etc/person.html:44
-#, fuzzy
 msgid "Children:"
 msgstr "子女"
 
 #: hd/etc/person.html:52
-#, fuzzy
 msgid "Family(ies):"
 msgstr "家族"
 
 #: hd/etc/person.html:60
-#, fuzzy
 msgid "Events"
 msgstr "事件："
 
 #: hd/etc/person.html:76
-#, fuzzy
 msgid "Delete person"
 msgstr "创建人物"
 
