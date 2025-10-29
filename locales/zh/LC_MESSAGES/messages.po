@@ -330,7 +330,7 @@ msgstr "返回"
 
 #: hd/etc/note_view.html:11
 msgid "Delete"
-msgstr "删除家庭"
+msgstr "删除"
 
 #: hd/etc/note_view.html:13
 msgid "Back to notes"
