@@ -413,3 +413,39 @@ msgstr "Todas las familias"
 msgid "Change database"
 msgstr "Cambiar base"
 
+#: hd/etc/search.html:2 hd/etc/search.html:6 hd/etc/search.html:7 hd/etc/search.html:9
+msgid "Search"
+msgstr "Buscar"
+
+#: hd/etc/search.html:2
+msgid "Search — geneweb-py"
+msgstr "Buscar — geneweb-py"
+
+#: hd/etc/search.html:7
+msgid "Search people and families by name or other fields."
+msgstr "Buscar personas y familias por nombre u otros campos."
+
+#: hd/etc/search.html:11
+msgid "Query"
+msgstr "Consulta"
+
+#: hd/etc/search.html:13
+msgid "Type"
+msgstr "Tipo"
+
+#: hd/etc/search.html:15
+msgid "People & Families"
+msgstr "Personas y familias"
+
+#: hd/etc/search.html:18
+msgid "Limit"
+msgstr "Límite"
+
+#: hd/etc/welcome.html:10
+msgid "Quick search"
+msgstr "Búsqueda rápida"
+
+#: hd/etc/welcome.html:11
+msgid "Name or family"
+msgstr "Nombre o familia"
+

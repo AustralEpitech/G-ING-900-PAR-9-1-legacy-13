@@ -418,6 +418,42 @@ msgstr "所有家族"
 #: hd/etc/welcome.html:13
 msgid "Change database"
 msgstr "切换数据库"
+
+#: hd/etc/search.html:2 hd/etc/search.html:6 hd/etc/search.html:7 hd/etc/search.html:9
+msgid "Search"
+msgstr "搜索"
+
+#: hd/etc/search.html:2
+msgid "Search — geneweb-py"
+msgstr "搜索 — geneweb-py"
+
+#: hd/etc/search.html:7
+msgid "Search people and families by name or other fields."
+msgstr "按姓名或其他字段搜索人物和家庭。"
+
+#: hd/etc/search.html:11
+msgid "Query"
+msgstr "查询"
+
+#: hd/etc/search.html:13
+msgid "Type"
+msgstr "类型"
+
+#: hd/etc/search.html:15
+msgid "People & Families"
+msgstr "人物与家庭"
+
+#: hd/etc/search.html:18
+msgid "Limit"
+msgstr "限制"
+
+#: hd/etc/welcome.html:10
+msgid "Quick search"
+msgstr "快速搜索"
+
+#: hd/etc/welcome.html:11
+msgid "Name or family"
+msgstr "姓名或家族"
 # Chinese translations for PROJECT.
 # Copyright (C) 2025 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.

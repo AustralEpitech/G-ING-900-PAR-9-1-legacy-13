@@ -16,6 +16,11 @@ body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;backg
 h1,h2{margin:0 0 12px 0}
 ul{padding-left:1.2rem}
 
+/* Welcome card layout: place logo to the right, vertically centered */
+.welcome-card{display:flex;align-items:center;justify-content:space-between}
+.welcome-card .welcome-main{flex:1;min-width:0}
+.welcome-card img.logo{max-width:250px;height:auto;margin-left:16px;object-fit:contain}
+
 a.button, button{background:var(--accent);color:white;padding:8px 12px;border-radius:6px;border:none;text-decoration:none}
 a.button.secondary{background:#6b7280}
 
@@ -30,4 +35,7 @@ textarea{min-height:160px}
 @media (max-width:600px){
   .main-nav{float:none;margin-top:8px}
   .container{padding:0 12px}
+  /* Stack the welcome card on small screens and make logo align to the right */
+  .welcome-card{flex-direction:column;align-items:flex-start}
+  .welcome-card img.logo{margin-left:0;margin-top:12px;align-self:flex-end}
 }

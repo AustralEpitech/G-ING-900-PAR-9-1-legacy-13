@@ -12,6 +12,7 @@ from ..plugins import load_plugins
 from ..config import load_config
 import gettext
 from pathlib import Path as _Path
+from ..search import search_people, search_families
 
 app = FastAPI(title="geneweb-py")
 
@@ -817,3 +818,43 @@ def api_family(fid: str):
         "wife": wife.to_dict() if wife else None,
         "children": children,
     }
+
+
+@app.get("/api/search")
+def api_search(q: str = None, type: str = "both", limit: int = 50):
+    """Search API. Query param `q` required. `type` may be 'people', 'families' or 'both'."""
+    if not q:
+        raise HTTPException(status_code=400, detail="Missing query parameter 'q'")
+    res = {}
+    if type in ("people", "both"):
+        ppl = search_people(list(storage.list_persons()), q, limit=limit)
+        res["people"] = [p.to_dict() for p in ppl]
+    if type in ("families", "both"):
+        fams = search_families(list(storage.families.values()), list(storage.list_persons()), q, limit=limit)
+        res["families"] = [f.to_dict() for f in fams]
+    return res
+
+
+@app.get("/search", response_class=HTMLResponse)
+def search_page(request: Request, q: Optional[str] = None, type: str = "both", limit: int = 50):
+    """Render a simple search UI that shows people and family results using the
+    in-memory search implementation. Query params: q, type (people|families|both), limit."""
+    people = []
+    families = []
+    if q:
+        if type in ("people", "both"):
+            people = search_people(list(storage.list_persons()), q, limit=limit)
+        if type in ("families", "both"):
+            # compute a families display structure (avoid referencing `storage` from templates)
+            raw_fams = search_families(list(storage.families.values()), list(storage.list_persons()), q, limit=limit)
+            families = []
+            for f in raw_fams:
+                husband = storage.get_person(f.husband_id) if f.husband_id else None
+                wife = storage.get_person(f.wife_id) if f.wife_id else None
+                families.append({
+                    "id": f.id,
+                    "husband": husband.to_dict() if husband else None,
+                    "wife": wife.to_dict() if wife else None,
+                })
+
+    return localized_template_response("search.html", {"request": request, "q": q or "", "people": people, "families": families, "type": type, "limit": limit})
