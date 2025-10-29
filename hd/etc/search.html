@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Search — geneweb-py') }}{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1>{{ _('Search') }}</h1>
+    <p class="small-muted">{{ _('Search people and families by name or other fields.') }}</p>
+
+    <form method="get" action="/search">
+      <div class="form-row">
+        <label for="q">{{ _('Query') }}:</label>
+        <input id="q" name="q" value="{{ q }}" size="40" />
+        <label for="type">{{ _('Type') }}:</label>
+        <select id="type" name="type">
+          <option value="both" {% if type == 'both' %}selected{% endif %}>{{ _('People & Families') }}</option>
+          <option value="people" {% if type == 'people' %}selected{% endif %}>{{ _('People') }}</option>
+          <option value="families" {% if type == 'families' %}selected{% endif %}>{{ _('Families') }}</option>
+        </select>
+        <label for="limit">{{ _('Limit') }}:</label>
+        <input id="limit" name="limit" value="{{ limit }}" size="4" />
+        <button class="button" type="submit">{{ _('Search') }}</button>
+      </div>
+    </form>
+
+    {% if people %}
+      <h2>{{ _('People') }}</h2>
+      <ul>
+        {% for p in people %}
+          <li><a href="/person/{{ p.id }}">{{ p.first_name }} {{ p.surname }}</a>{% if p.birth_date %} - <small>{{ p.birth_date }}</small>{% endif %}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if families %}
+      <h2>{{ _('Families') }}</h2>
+      <ul>
+        {% for f in families %}
+          <li>
+            <a href="/family/{{ f.id }}">{{ f.id }}</a>
+            {% set husband = f.husband %}
+            {% set wife = f.wife %}
+            {% if husband or wife %}
+              - <small>
+                {% if husband %}{{ husband.first_name }} {{ husband.surname }}{% endif %}
+                {% if husband and wife %} &amp; {% endif %}
+                {% if wife %}{{ wife.first_name }} {{ wife.surname }}{% endif %}
+              </small>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <p class="nav-links">
+      <a class="button secondary" href="/">{{ _('Home') }}</a>
+    </p>
+  </div>
+{% endblock %}

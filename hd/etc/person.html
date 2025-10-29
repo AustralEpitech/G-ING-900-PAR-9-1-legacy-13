@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}{{ person.first_name }} {{ person.surname }} — geneweb-py{% endblock %}
+{% block title %}{{ person.first_name }} {{ person.surname }} — {{ _('geneweb-py') }}{% endblock %}
 
 {% block content %}
   <div class="card">
     <h1>{{ person.first_name }} {{ person.surname }}</h1>
-    <p class="small-muted">Sex: {{ person.sex or '(unknown)' }}</p>
+    <p class="small-muted">{{ _('Sex') }}: {{ person.sex or _('(unknown)') }}</p>
 
     {% if spouses %}
-      <p><strong>Spouse(s):</strong>
+      <p><strong>{{ _('Spouse(s):') }}</strong>
         {% for s in spouses %}
           <a href="/person/{{ s.id }}">{{ s.first_name }} {{ s.surname }}</a>{% if not loop.last %}, {% endif %}
         {% endfor %}
@@ -15,7 +15,7 @@
     {% endif %}
 
     {% if parents %}
-      <p><strong>Parent(s):</strong>
+      <p><strong>{{ _('Parent(s):') }}</strong>
         {% for p in parents %}
           <a href="/person/{{ p.id }}">{{ p.first_name }} {{ p.surname }}</a>{% if not loop.last %}, {% endif %}
         {% endfor %}
@@ -23,25 +23,25 @@
     {% endif %}
 
     {% if person.birth_date or person.birth_place or person.birth_note %}
-      <h2>Birth</h2>
+      <h2>{{ _('Birth') }}</h2>
       <p>
-        {% if person.birth_date %}<strong>Date:</strong> {{ person.birth_date.to_iso() }}<br>{% endif %}
-        {% if person.birth_place %}<strong>Place:</strong> {{ person.birth_place.to_simple() }}<br>{% endif %}
-        {% if person.birth_note %}<strong>Note:</strong> {{ person.birth_note }}{% endif %}
+        {% if person.birth_date %}<strong>{{ _('Date:') }}</strong> {{ person.birth_date.to_iso() }}<br>{% endif %}
+        {% if person.birth_place %}<strong>{{ _('Place:') }}</strong> {{ person.birth_place.to_simple() }}<br>{% endif %}
+        {% if person.birth_note %}<strong>{{ _('Note:') }}</strong> {{ person.birth_note }}{% endif %}
       </p>
     {% endif %}
 
     {% if person.death_date or person.death_place or person.death_note %}
-      <h2>Death</h2>
+      <h2>{{ _('Death') }}</h2>
       <p>
-        {% if person.death_date %}<strong>Date:</strong> {{ person.death_date.to_iso() }}<br>{% endif %}
-        {% if person.death_place %}<strong>Place:</strong> {{ person.death_place.to_simple() }}<br>{% endif %}
-        {% if person.death_note %}<strong>Note:</strong> {{ person.death_note }}{% endif %}
+        {% if person.death_date %}<strong>{{ _('Date:') }}</strong> {{ person.death_date.to_iso() }}<br>{% endif %}
+        {% if person.death_place %}<strong>{{ _('Place:') }}</strong> {{ person.death_place.to_simple() }}<br>{% endif %}
+        {% if person.death_note %}<strong>{{ _('Note:') }}</strong> {{ person.death_note }}{% endif %}
       </p>
     {% endif %}
 
     {% if children %}
-      <p><strong>Children:</strong>
+      <p><strong>{{ _('Children:') }}</strong>
         {% for c in children %}
           <a href="/person/{{ c.id }}">{{ c.first_name }} {{ c.surname }}</a>{% if not loop.last %}, {% endif %}
         {% endfor %}
@@ -49,15 +49,15 @@
     {% endif %}
 
     {% if families %}
-      <p><strong>Family(ies):</strong>
+      <p><strong>{{ _('Family(ies):') }}</strong>
         {% for f in families %}
-          <a href="/family/{{ f.id }}">Family {{ f.id }}</a>{% if not loop.last %}, {% endif %}
+          <a href="/family/{{ f.id }}">{{ _('Family') }} {{ f.id }}</a>{% if not loop.last %}, {% endif %}
         {% endfor %}
       </p>
     {% endif %}
 
     {% if person.pevents %}
-      <h2>Events</h2>
+      <h2>{{ _('Events') }}</h2>
       <ul>
         {% for e in person.pevents %}
           <li>
@@ -71,11 +71,11 @@
     {% endif %}
 
     <div class="nav-links" style="margin-top:12px">
-      <a class="button" href="/person/{{ person.id }}/edit">Edit person</a>
+      <a class="button" href="/person/{{ person.id }}/edit">{{ _('Edit person') }}</a>
       <form method="post" action="/person/{{ person.id }}/delete" style="display:inline">
-        <button type="submit">Delete person</button>
+        <button type="submit">{{ _('Delete person') }}</button>
       </form>
-      <a class="button secondary" href="/">Back</a>
+      <a class="button secondary" href="/">{{ _('Back') }}</a>
     </div>
   </div>
 {% endblock %}

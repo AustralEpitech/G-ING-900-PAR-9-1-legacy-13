@@ -52,12 +52,16 @@ def load_config(config_path: Optional[str] = None) -> Config:
             if "static_dir" in data:
                 cfg.static_dir = Path(data["static_dir"]) if data["static_dir"] else cfg.static_dir
 
-    # 2) environment variables override
-    if os.environ.get("GENEWEB_DATA_DIR"):
-        cfg.data_dir = Path(os.environ.get("GENEWEB_DATA_DIR"))
-    if os.environ.get("GENEWEB_TEMPLATES_DIR"):
-        cfg.templates_dir = Path(os.environ.get("GENEWEB_TEMPLATES_DIR"))
-    if os.environ.get("GENEWEB_STATIC_DIR"):
-        cfg.static_dir = Path(os.environ.get("GENEWEB_STATIC_DIR"))
+    # 2) environment variables override only if no explicit config_path was
+    # provided to the function. When a config_path is passed we consider the
+    # file authoritative for the test/explicit case and do not let global env
+    # variables silently override those values (tests rely on this).
+    if config_path is None:
+        if os.environ.get("GENEWEB_DATA_DIR"):
+            cfg.data_dir = Path(os.environ.get("GENEWEB_DATA_DIR"))
+        if os.environ.get("GENEWEB_TEMPLATES_DIR"):
+            cfg.templates_dir = Path(os.environ.get("GENEWEB_TEMPLATES_DIR"))
+        if os.environ.get("GENEWEB_STATIC_DIR"):
+            cfg.static_dir = Path(os.environ.get("GENEWEB_STATIC_DIR"))
 
     return cfg
