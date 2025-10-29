@@ -45,7 +45,7 @@
       <div class="form-row">
   <label>{{ _('Events:') }}</label>
         <div>
-          {% set rows = event_rows or 3 %}
+          {% set rows = [event_rows|int, person.pevents|length, 1]|max %}
           {% for i in range(rows) %}
             {% set ev = person.pevents[i] if i < person.pevents|length else None %}
             <div class="event-row" style="margin-bottom:10px;padding:6px;border:1px solid #eee;border-radius:4px;">

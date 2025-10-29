@@ -37,7 +37,7 @@
       <div class="form-row">
   <label>{{ _('Family events:') }}</label>
         <div>
-          {% set rows = fevent_rows or 2 %}
+          {% set rows = [fevent_rows|int, family.fevents|length, 1]|max %}
           {% for i in range(rows) %}
             {% set ev = family.fevents[i] if i < family.fevents|length else None %}
             <div class="event-row" style="margin-bottom:10px;padding:6px;border:1px solid #eee;border-radius:4px;">
