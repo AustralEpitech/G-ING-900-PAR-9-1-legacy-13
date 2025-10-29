@@ -2,27 +2,30 @@
 {% block title %}{{ _('Welcome to geneweb-py') }}{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <h1>{{ _('Welcome to geneweb-py') }}</h1>
-    <p class="small-muted">{{ _('Use the links below to explore and manage the family data.') }}</p>
-      <form method="get" action="/search" class="welcome-search">
-        <div class="form-row">
-          <label for="q">{{ _('Quick search') }}:</label>
-          <input id="q" name="q" size="30" placeholder="{{ _('Name or family') }}" />
-          <input type="hidden" name="type" value="both" />
-          <button class="button" type="submit">{{ _('Search') }}</button>
-        </div>
-      </form>
-    <p class="nav-links" style="height:26px">
-      <a class="button" href="/people">{{ _('All people') }}</a>
-      <a class="button" href="/families">{{ _('All families') }}</a>
-    </p>
-    <p class="nav-links" style="height:26px">
-      <a class="button" href="/person/create">{{ _('Create person') }}</a>
-      <a class="button" href="/family/create">{{ _('Create family') }}</a>
-    </p>
-    <p class="nav-links" style="height:26px">
-      <a class="button secondary" href="/change_db">{{ _('Change database') }}</a>
-    </p>
+  <div class="card welcome-card">
+    <div class="welcome-main">
+      <h1>{{ _('Welcome to geneweb-py') }}</h1>
+      <p class="small-muted">{{ _('Use the links below to explore and manage the family data.') }}</p>
+        <form method="get" action="/search" class="welcome-search">
+          <div class="form-row">
+            <label for="q">{{ _('Quick search') }}:</label>
+            <input id="q" name="q" size="30" placeholder="{{ _('Name or family') }}" />
+            <input type="hidden" name="type" value="both" />
+            <button class="button" type="submit">{{ _('Search') }}</button>
+          </div>
+        </form>
+      <p class="nav-links" style="height:26px">
+        <a class="button" href="/people">{{ _('All people') }}</a>
+        <a class="button" href="/families">{{ _('All families') }}</a>
+      </p>
+      <p class="nav-links" style="height:26px">
+        <a class="button" href="/person/create">{{ _('Create person') }}</a>
+        <a class="button" href="/family/create">{{ _('Create family') }}</a>
+      </p>
+      <p class="nav-links" style="height:26px">
+        <a class="button secondary" href="/change_db">{{ _('Change database') }}</a>
+      </p>
+    </div>
+    <img src="/static/geneweb-py-logo-perspective.png" alt="geneweb-py logo" class="logo" />
   </div>
 {% endblock %}
