@@ -29,15 +29,6 @@ templates = Jinja2Templates(directory=str(templates_dir))
 storage = Storage(Path("data"))
 
 
-def ensure_sample_data():
-    # Create minimal sample data if storage empty so the UI shows something
-    if len(storage.list_persons()) == 0:
-        p = Person(first_name="John", surname="Doe", sex="M")
-        q = Person(first_name="Jane", surname="Doe", sex="F")
-        storage.add_person(p)
-        storage.add_person(q)
-        f = Family(husband_id=p.id, wife_id=q.id, children_ids=[])
-        storage.add_family(f)
 
 # Load plugins now (registers routes and lifecycle hooks). We load config first.
 cfg = load_config()
@@ -115,8 +106,8 @@ def families_list(request: Request):
 
 
 @app.get("/person/create", response_class=HTMLResponse)
-def create_person_form(request: Request):
-    return templates.TemplateResponse("create_person.html", {"request": request})
+def create_person_form(request: Request, event_rows: int = 1):
+    return templates.TemplateResponse("create_person.html", {"request": request, "event_rows": event_rows})
 
 
 @app.post("/person/create")
@@ -130,7 +121,10 @@ def create_person(
     death_date: Optional[str] = Form(None),
     death_place: Optional[str] = Form(None),
     death_note: Optional[str] = Form(None),
-    pevents: Optional[str] = Form(None),
+    pevent_kind: List[str] = Form([]),
+    pevent_date: List[str] = Form([]),
+    pevent_place: List[str] = Form([]),
+    pevent_note: List[str] = Form([]),
 ):
     logging.info("create_person called with first_name=%s, surname=%s, sex=%s", first_name, surname, sex)
     p = Person(first_name=first_name, surname=surname, sex=sex)
@@ -147,21 +141,16 @@ def create_person(
         p.death_place = Place.from_simple(death_place)
     if death_note:
         p.death_note = death_note
-    # parse person events: accept multiline text where each line is
-    # "TYPE | DATE | PLACE | NOTE" (pipe-separated). DATE and PLACE optional.
-    if pevents:
-        evs: list[PersEvent] = []
-        for ln in pevents.splitlines():
-            ln = ln.strip()
-            if not ln:
-                continue
-            parts = [p.strip() for p in ln.split("|")]
-            kind = parts[0] if len(parts) > 0 else ""
-            date = CDate.from_string(parts[1]) if len(parts) > 1 and parts[1] else None
-            place = Place.from_simple(parts[2]) if len(parts) > 2 and parts[2] else None
-            note = parts[3] if len(parts) > 3 and parts[3] else None
-            evs.append(PersEvent(kind=kind, date=date, place=place, note=note))
-        p.pevents = evs
+    # parse person events from repeated form fields (server-side dynamic rows)
+    evs: list[PersEvent] = []
+    for i, kind in enumerate(pevent_kind or []):
+        if not kind:
+            continue
+        date = CDate.from_string(pevent_date[i]) if i < len(pevent_date) and pevent_date[i] else None
+        place = Place.from_simple(pevent_place[i]) if i < len(pevent_place) and pevent_place[i] else None
+        note = pevent_note[i] if i < len(pevent_note) and pevent_note[i] else None
+        evs.append(PersEvent(kind=kind, date=date, place=place, note=note))
+    p.pevents = evs
     try:
         storage.add_person(p)
         logging.info("Created person %s; persons now: %s", p.id, list(storage.persons.keys()))
@@ -173,11 +162,13 @@ def create_person(
 
 
 @app.get("/person/{pid}/edit", response_class=HTMLResponse)
-def edit_person_form(request: Request, pid: str):
+def edit_person_form(request: Request, pid: str, event_rows: Optional[int] = None):
     p = storage.get_person(pid)
     if p is None:
         raise HTTPException(status_code=404, detail="Person not found")
-    return templates.TemplateResponse("edit_person.html", {"request": request, "person": p})
+    # determine how many event rows to render: provided event_rows overrides; otherwise base on existing events
+    rows = max(event_rows, len(p.pevents)) if event_rows is not None else len(p.pevents)
+    return templates.TemplateResponse("edit_person.html", {"request": request, "person": p, "event_rows": rows})
 
 
 @app.post("/person/{pid}/edit")
@@ -192,7 +183,11 @@ def edit_person(
     death_date: Optional[str] = Form(None),
     death_place: Optional[str] = Form(None),
     death_note: Optional[str] = Form(None),
-    pevents: Optional[str] = Form(None),
+    pevent_kind: List[str] = Form([]),
+    pevent_date: List[str] = Form([]),
+    pevent_place: List[str] = Form([]),
+    pevent_note: List[str] = Form([]),
+    pevent_action: List[str] = Form([]),
 ):
     p = storage.get_person(pid)
     if p is None:
@@ -213,20 +208,19 @@ def edit_person(
         p.death_place = Place.from_simple(death_place)
     if death_note is not None:
         p.death_note = death_note
-    # parse pevents if provided (replace existing list)
-    if pevents is not None:
-        evs: list[PersEvent] = []
-        for ln in pevents.splitlines():
-            ln = ln.strip()
-            if not ln:
-                continue
-            parts = [p.strip() for p in ln.split("|")]
-            kind = parts[0] if len(parts) > 0 else ""
-            date = CDate.from_string(parts[1]) if len(parts) > 1 and parts[1] else None
-            place = Place.from_simple(parts[2]) if len(parts) > 2 and parts[2] else None
-            note = parts[3] if len(parts) > 3 and parts[3] else None
-            evs.append(PersEvent(kind=kind, date=date, place=place, note=note))
-        p.pevents = evs
+    # parse pevents from repeated form fields (replace existing list)
+    evs: list[PersEvent] = []
+    for i, kind in enumerate(pevent_kind or []):
+        action = pevent_action[i] if i < len(pevent_action) else ""
+        if action == "remove":
+            continue
+        if not kind:
+            continue
+        date = CDate.from_string(pevent_date[i]) if i < len(pevent_date) and pevent_date[i] else None
+        place = Place.from_simple(pevent_place[i]) if i < len(pevent_place) and pevent_place[i] else None
+        note = pevent_note[i] if i < len(pevent_note) and pevent_note[i] else None
+        evs.append(PersEvent(kind=kind, date=date, place=place, note=note))
+    p.pevents = evs
     storage.update_person(p)
     return RedirectResponse(url=f"/person/{pid}", status_code=303)
 
@@ -327,9 +321,9 @@ def delete_person(pid: str):
 
 
 @app.get("/family/create", response_class=HTMLResponse)
-def create_family_form(request: Request):
+def create_family_form(request: Request, fevent_rows: int = 1):
     persons = storage.list_persons()
-    return templates.TemplateResponse("create_family.html", {"request": request, "persons": persons})
+    return templates.TemplateResponse("create_family.html", {"request": request, "persons": persons, "fevent_rows": fevent_rows})
 
 
 @app.post("/family/create")
@@ -337,21 +331,20 @@ def create_family(
     husband_id: Optional[str] = Form(None),
     wife_id: Optional[str] = Form(None),
     children_ids: List[str] = Form([]),
-    fevents: Optional[str] = Form(None),
+    fevent_kind: List[str] = Form([]),
+    fevent_date: List[str] = Form([]),
+    fevent_place: List[str] = Form([]),
+    fevent_note: List[str] = Form([]),
 ):
     f = Family(husband_id=husband_id or None, wife_id=wife_id or None, children_ids=children_ids)
-    # parse family events from multiline input (TYPE | DATE | PLACE | NOTE)
-    if fevents:
+    if fevent_kind:
         fes: list[PersEvent] = []
-        for ln in fevents.splitlines():
-            ln = ln.strip()
-            if not ln:
+        for i, kind in enumerate(fevent_kind or []):
+            if not kind:
                 continue
-            parts = [p.strip() for p in ln.split("|")]
-            kind = parts[0] if len(parts) > 0 else ""
-            date = CDate.from_string(parts[1]) if len(parts) > 1 and parts[1] else None
-            place = Place.from_simple(parts[2]) if len(parts) > 2 and parts[2] else None
-            note = parts[3] if len(parts) > 3 and parts[3] else None
+            date = CDate.from_string(fevent_date[i]) if i < len(fevent_date) and fevent_date[i] else None
+            place = Place.from_simple(fevent_place[i]) if i < len(fevent_place) and fevent_place[i] else None
+            note = fevent_note[i] if i < len(fevent_note) and fevent_note[i] else None
             fes.append(PersEvent(kind=kind, date=date, place=place, note=note))
         f.fevents = fes
     storage.add_family(f)
@@ -359,12 +352,13 @@ def create_family(
 
 
 @app.get("/family/{fid}/edit", response_class=HTMLResponse)
-def edit_family_form(request: Request, fid: str):
+def edit_family_form(request: Request, fid: str, fevent_rows: Optional[int] = None):
     f = storage.get_family(fid)
     if f is None:
         raise HTTPException(status_code=404, detail="Family not found")
     persons = storage.list_persons()
-    return templates.TemplateResponse("edit_family.html", {"request": request, "family": f, "persons": persons})
+    rows = max(fevent_rows, len(f.fevents)) if fevent_rows is not None else len(f.fevents)
+    return templates.TemplateResponse("edit_family.html", {"request": request, "family": f, "persons": persons, "fevent_rows": rows})
 
 
 @app.post("/family/{fid}/edit")
@@ -373,7 +367,11 @@ def edit_family(
     husband_id: Optional[str] = Form(None),
     wife_id: Optional[str] = Form(None),
     children_ids: List[str] = Form([]),
-    fevents: Optional[str] = Form(None),
+    fevent_kind: List[str] = Form([]),
+    fevent_date: List[str] = Form([]),
+    fevent_place: List[str] = Form([]),
+    fevent_note: List[str] = Form([]),
+    fevent_action: List[str] = Form([]),
 ):
     f = storage.get_family(fid)
     if f is None:
@@ -381,19 +379,19 @@ def edit_family(
     f.husband_id = husband_id or None
     f.wife_id = wife_id or None
     f.children_ids = children_ids
-    if fevents is not None:
-        fes: list[PersEvent] = []
-        for ln in fevents.splitlines():
-            ln = ln.strip()
-            if not ln:
-                continue
-            parts = [p.strip() for p in ln.split("|")]
-            kind = parts[0] if len(parts) > 0 else ""
-            date = CDate.from_string(parts[1]) if len(parts) > 1 and parts[1] else None
-            place = Place.from_simple(parts[2]) if len(parts) > 2 and parts[2] else None
-            note = parts[3] if len(parts) > 3 and parts[3] else None
-            fes.append(PersEvent(kind=kind, date=date, place=place, note=note))
-        f.fevents = fes
+    # parse fevents if provided (replace existing list)
+    fes: list[PersEvent] = []
+    for i, kind in enumerate(fevent_kind or []):
+        action = fevent_action[i] if i < len(fevent_action) else ""
+        if action == "remove":
+            continue
+        if not kind:
+            continue
+        date = CDate.from_string(fevent_date[i]) if i < len(fevent_date) and fevent_date[i] else None
+        place = Place.from_simple(fevent_place[i]) if i < len(fevent_place) and fevent_place[i] else None
+        note = fevent_note[i] if i < len(fevent_note) and fevent_note[i] else None
+        fes.append(PersEvent(kind=kind, date=date, place=place, note=note))
+    f.fevents = fes
     storage.update_family(f)
     return RedirectResponse(url=f"/family/{fid}", status_code=303)
 

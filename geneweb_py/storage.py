@@ -52,14 +52,10 @@ class Storage:
         cur = self._conn.cursor()
         # New schema: use JSON columns for structured fields (pevents, places)
         # and normalized columns for commonly queried fields.
-        # We recreate the tables for this non-backward-compatible change.
+        # Create missing tables if they do not already exist — do NOT drop existing tables
         cur.executescript(
             """
-            DROP TABLE IF EXISTS persons;
-            DROP TABLE IF EXISTS families;
-            DROP TABLE IF EXISTS family_children;
-            DROP TABLE IF EXISTS notes;
-            CREATE TABLE persons(
+            CREATE TABLE IF NOT EXISTS persons(
                 id TEXT PRIMARY KEY,
                 first_name TEXT,
                 surname TEXT,
@@ -73,17 +69,17 @@ class Storage:
                 pevents_json TEXT,
                 notes_json TEXT
             );
-            CREATE TABLE families(
+            CREATE TABLE IF NOT EXISTS families(
                 id TEXT PRIMARY KEY,
                 husband_id TEXT,
                 wife_id TEXT,
                 fevents_json TEXT
             );
-            CREATE TABLE family_children(
+            CREATE TABLE IF NOT EXISTS family_children(
                 family_id TEXT,
                 child_id TEXT
             );
-            CREATE TABLE notes(
+            CREATE TABLE IF NOT EXISTS notes(
                 id TEXT PRIMARY KEY,
                 title TEXT,
                 text TEXT

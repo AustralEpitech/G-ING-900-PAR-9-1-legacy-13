@@ -43,9 +43,28 @@
         </label>
       </div>
       <div class="form-row">
-        <label>Events (one per line: TYPE | DATE | PLACE | NOTE):
-          <textarea name="pevents" rows="4" placeholder="e.g. BAPTISM | 12 JAN 1900 | St Mary's Church | Notes about event"></textarea>
-        </label>
+        <label>Events (one per row):</label>
+        <div>
+          {% set rows = event_rows or 3 %}
+            {% for i in range(rows) %}
+              <div class="event-row" style="margin-bottom:10px;padding:6px;border:1px solid #eee;border-radius:4px;">
+                <div style="margin-bottom:6px;font-weight:600">Event {{ loop.index }}</div>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                  <input type="text" name="pevent_kind" placeholder="Type (e.g. BAPTISM)" />
+                  <input type="text" name="pevent_date" placeholder="Date (e.g. 12 JAN 1900)" />
+                  <input type="text" name="pevent_place" placeholder="Place" />
+                  <input type="text" name="pevent_note" placeholder="Note" />
+                  <label style="margin-left:6px">Action:
+                    <select name="pevent_action">
+                      <option value="">Keep</option>
+                      <option value="remove">Remove</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+            {% endfor %}
+          <p><a href="/person/create?event_rows={{ rows + 1 }}">Add event</a></p>
+        </div>
       </div>
       <div class="form-row">
         <button type="submit">Create</button>

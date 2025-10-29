@@ -35,9 +35,28 @@
         </label>
       </div>
       <div class="form-row">
-        <label>Family events (one per line: TYPE | DATE | PLACE | NOTE):
-          <textarea name="fevents" rows="4" placeholder="e.g. MARRIAGE | 1 JUN 1920 | Town Hall | Notes"></textarea>
-        </label>
+        <label>Family events:</label>
+        <div>
+          {% set rows = fevent_rows or 2 %}
+            {% for i in range(rows) %}
+              <div class="event-row" style="margin-bottom:10px;padding:6px;border:1px solid #eee;border-radius:4px;">
+                <div style="margin-bottom:6px;font-weight:600">Event {{ loop.index }}</div>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                  <input type="text" name="fevent_kind" placeholder="Type (e.g. MARRIAGE)" />
+                  <input type="text" name="fevent_date" placeholder="Date (e.g. 1 JUN 1920)" />
+                  <input type="text" name="fevent_place" placeholder="Place" />
+                  <input type="text" name="fevent_note" placeholder="Note" />
+                  <label style="margin-left:6px">Action:
+                    <select name="fevent_action">
+                      <option value="">Keep</option>
+                      <option value="remove">Remove</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+            {% endfor %}
+          <p><a href="/family/create?fevent_rows={{ rows + 1 }}">Add event</a></p>
+        </div>
       </div>
       <div class="form-row">
         <button type="submit">Create family</button>
