@@ -375,7 +375,7 @@ msgstr "Note"
 
 #: hd/etc/person.html:35
 msgid "Death"
-msgstr "Death note"
+msgstr "Death"
 
 #: hd/etc/person.html:44
 msgid "Children:"
