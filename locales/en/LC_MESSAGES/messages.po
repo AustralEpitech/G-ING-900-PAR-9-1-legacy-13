@@ -347,7 +347,7 @@ msgstr "All people"
 
 #: hd/etc/people_list.html:7
 msgid "All people in the database."
-msgstr "All families in the database."
+msgstr "All people in the database."
 
 #: hd/etc/person.html:10
 msgid "Spouse(s):"
