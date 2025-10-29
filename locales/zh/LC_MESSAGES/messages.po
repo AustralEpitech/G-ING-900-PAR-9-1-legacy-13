@@ -350,7 +350,7 @@ msgstr "所有人物"
 
 #: hd/etc/people_list.html:7
 msgid "All people in the database."
-msgstr "数据库中的所有家族。"
+msgstr "数据库中的所有人物。"
 
 #: hd/etc/person.html:10
 #. Auto-filled draft translation
