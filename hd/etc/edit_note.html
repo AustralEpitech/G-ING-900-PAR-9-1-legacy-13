@@ -1,26 +1,26 @@
 {% extends "base.html" %}
-{% block title %}{% if note %}Edit note {{ note.id }}{% else %}Create note{% endif %} — Notes{% endblock %}
+{% block title %}{% if note %}{{ _('Edit note') }} {{ note.id }}{% else %}{{ _('Create note') }}{% endif %} — {{ _('Notes') }}{% endblock %}
 
 {% block content %}
   <div class="card">
-    <h1>{% if note %}Edit note{% else %}Create note{% endif %}</h1>
+    <h1>{% if note %}{{ _('Edit note') }}{% else %}{{ _('Create note') }}{% endif %}</h1>
     <form method="post" action="{% if note %}/notes/{{ note.id }}/edit{% else %}/notes/create{% endif %}">
       {% if not note %}
         <div class="form-row">
-          <label>Id (path-like, no .txt): <input type="text" name="nid" required></label>
+          <label>{{ _('Id (path-like, no .txt):') }} <input type="text" name="nid" required></label>
         </div>
       {% endif %}
       <div class="form-row">
-        <label>Title: <input type="text" name="title" value="{{ note.title if note else '' }}"></label>
+        <label>{{ _('Title:') }} <input type="text" name="title" value="{{ note.title if note else '' }}"></label>
       </div>
       <div class="form-row">
-        <label>Text:
+        <label>{{ _('Text:') }}
           <textarea name="text" rows="12">{{ note.text if note else '' }}</textarea>
         </label>
       </div>
       <div class="form-row">
-        <button type="submit">Save</button>
-        <a class="button secondary" href="/notes">Cancel</a>
+        <button type="submit">{{ _('Save') }}</button>
+        <a class="button secondary" href="/notes">{{ _('Cancel') }}</a>
       </div>
     </form>
   </div>

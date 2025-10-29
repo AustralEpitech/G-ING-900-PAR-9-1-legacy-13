@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Family {{ family.id }} — geneweb-py{% endblock %}
+{% block title %}{{ _('Family') }} {{ family.id }} — {{ _('geneweb-py') }}{% endblock %}
 
 {% block content %}
   <div class="card">
-    <h1>Family {{ family.id }}</h1>
-    <p class="small-muted">Husband: {% if husband %}<a href="/person/{{ husband.id }}">{{ husband.first_name }} {{ husband.surname }}</a>{% else %} - {% endif %}</p>
-    <p class="small-muted">Wife: {% if wife %}<a href="/person/{{ wife.id }}">{{ wife.first_name }} {{ wife.surname }}</a>{% else %} - {% endif %}</p>
+  <h1>{{ _('Family') }} {{ family.id }}</h1>
+  <p class="small-muted">{{ _('Husband') }}: {% if husband %}<a href="/person/{{ husband.id }}">{{ husband.first_name }} {{ husband.surname }}</a>{% else %} - {% endif %}</p>
+  <p class="small-muted">{{ _('Wife') }}: {% if wife %}<a href="/person/{{ wife.id }}">{{ wife.first_name }} {{ wife.surname }}</a>{% else %} - {% endif %}</p>
 
-    <h2>Children</h2>
+  <h2>{{ _('Children') }}</h2>
     <ul>
       {% for c in children %}
         {% if c %}
@@ -17,7 +17,7 @@
     </ul>
 
     {% if family.fevents %}
-      <h2>Family events</h2>
+      <h2>{{ _('Family events') }}</h2>
       <ul>
         {% for e in family.fevents %}
           <li>
@@ -31,11 +31,11 @@
     {% endif %}
 
     <div class="nav-links" style="margin-top:12px">
-      <a class="button" href="/family/{{ family.id }}/edit">Edit family</a>
+      <a class="button" href="/family/{{ family.id }}/edit">{{ _('Edit family') }}</a>
       <form method="post" action="/family/{{ family.id }}/delete" style="display:inline">
-        <button type="submit">Delete family</button>
+        <button type="submit">{{ _('Delete family') }}</button>
       </form>
-      <a class="button secondary" href="/">Back</a>
+      <a class="button secondary" href="/">{{ _('Back') }}</a>
     </div>
   </div>
 {% endblock %}

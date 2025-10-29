@@ -1,0 +1,852 @@
+# Chinese translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-10-29 14:45+0100\n"
+"PO-Revision-Date: 2025-10-29 14:11+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh\n"
+"Language-Team: zh <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: hd/etc/base.html:5 hd/etc/base.html:12 hd/etc/base.html:34
+#: hd/etc/edit_family.html:2 hd/etc/edit_person.html:2 hd/etc/family.html:2
+#: hd/etc/person.html:2
+msgid "geneweb-py"
+msgstr "geneweb-py"
+
+#: hd/etc/base.html:14 hd/etc/families_list.html:15 hd/etc/notes_list.html:7
+#: hd/etc/people_list.html:15
+msgid "Home"
+msgstr "主页"
+
+#: hd/etc/base.html:15 hd/etc/edit_note.html:2 hd/etc/note_view.html:2
+#: hd/etc/notes_list.html:6
+msgid "Notes"
+msgstr "笔记"
+
+#: hd/etc/base.html:16
+msgid "New person"
+msgstr "新人物"
+
+#: hd/etc/base.html:17
+msgid "New family"
+msgstr "新家庭"
+
+#: hd/etc/base.html:20
+msgid "Language:"
+msgstr "语言："
+
+#: hd/etc/base.html:21
+msgid "English"
+msgstr "英语"
+
+#: hd/etc/base.html:22
+msgid "Français"
+msgstr "法语"
+
+#: hd/etc/base.html:23
+msgid "Español"
+msgstr "西班牙语"
+
+#: hd/etc/base.html:24
+msgid "中文"
+msgstr "中文"
+
+#: hd/etc/choose_base.html:2
+msgid "Choose a database — geneweb-py"
+msgstr "选择数据库 — geneweb-py"
+
+#: hd/etc/choose_base.html:6
+msgid "Choose a genealogy database"
+msgstr "选择一个家谱数据库"
+
+#: hd/etc/choose_base.html:7
+msgid "Select the database you want to use for this browser session."
+msgstr "选择您想在此浏览器会话中使用的数据库。"
+
+#: hd/etc/choose_base.html:15
+msgid "Open"
+msgstr "打开"
+
+#: hd/etc/choose_base.html:19
+msgid "If your database is not listed, create a new base below."
+msgstr "如果您的数据库未列出，请在下面创建一个新的。"
+
+#: hd/etc/choose_base.html:22
+msgid "Create new base"
+msgstr "创建新数据库"
+
+#: hd/etc/choose_base.html:23
+msgid "new-base-name"
+msgstr "新数据库名称"
+
+#: hd/etc/choose_base.html:24 hd/etc/create_person.html:64
+msgid "Create"
+msgstr "创建"
+
+#: hd/etc/choose_base.html:28
+msgid "New bases will be created under the configured data directory and a fresh"
+msgstr "新的数据库将被创建在配置的数据目录下，并且一个"
+
+#: hd/etc/choose_base.html:29
+msgid "will be initialized when the base is first used."
+msgstr "将在首次使用该数据库时初始化。"
+
+#: hd/etc/create_family.html:2
+msgid "Create family — geneweb-py"
+msgstr "创建家庭 — geneweb-py"
+
+#: hd/etc/create_family.html:6 hd/etc/create_family.html:56
+#: hd/etc/families_list.html:14 hd/etc/welcome.html:12
+msgid "Create family"
+msgstr "创建家庭"
+
+#: hd/etc/create_family.html:9 hd/etc/edit_family.html:9 hd/etc/family.html:7
+msgid "Husband"
+msgstr "丈夫"
+
+#: hd/etc/create_family.html:11 hd/etc/create_family.html:21
+#: hd/etc/edit_family.html:11 hd/etc/edit_family.html:21
+msgid "(none)"
+msgstr "（无）"
+
+#: hd/etc/create_family.html:19 hd/etc/edit_family.html:19 hd/etc/family.html:8
+msgid "Wife"
+msgstr "妻子"
+
+#: hd/etc/create_family.html:29 hd/etc/edit_family.html:29
+msgid "Children (hold ctrl / cmd to select multiple)"
+msgstr "子女（按住 ctrl / cmd 以选择多个）"
+
+#: hd/etc/create_family.html:38 hd/etc/edit_family.html:38
+msgid "Family events:"
+msgstr "家庭事件："
+
+#: hd/etc/create_family.html:43 hd/etc/create_person.html:51
+#: hd/etc/edit_family.html:44 hd/etc/edit_person.html:52
+msgid "Event"
+msgstr "事件"
+
+#: hd/etc/create_family.html:45 hd/etc/edit_family.html:46
+msgid "Type (e.g. MARRIAGE)"
+msgstr "类型（例如：婚姻）"
+
+#: hd/etc/create_family.html:46 hd/etc/edit_family.html:47
+msgid "Date (e.g. 1 JUN 1920)"
+msgstr "日期（例如：1 JUN 1920）"
+
+#: hd/etc/create_family.html:47 hd/etc/create_person.html:55
+#: hd/etc/edit_family.html:48 hd/etc/edit_person.html:56
+msgid "Place"
+msgstr "地点"
+
+#: hd/etc/create_family.html:48 hd/etc/create_person.html:56
+#: hd/etc/edit_family.html:49 hd/etc/edit_person.html:57
+msgid "Note"
+msgstr "备注"
+
+#: hd/etc/create_family.html:52 hd/etc/create_person.html:60
+#: hd/etc/edit_family.html:59 hd/etc/edit_person.html:67
+msgid "Add event"
+msgstr "添加事件"
+
+#: hd/etc/create_family.html:57 hd/etc/create_person.html:65
+#: hd/etc/edit_family.html:64 hd/etc/edit_note.html:23
+#: hd/etc/edit_person.html:72
+msgid "Cancel"
+msgstr "取消"
+
+#: hd/etc/create_person.html:2
+msgid "Create person — geneweb-py"
+msgstr "创建人物 — geneweb-py"
+
+#: hd/etc/create_person.html:6 hd/etc/people_list.html:14
+#: hd/etc/welcome.html:11
+msgid "Create person"
+msgstr "创建人物"
+
+#: hd/etc/create_person.html:9 hd/etc/edit_person.html:9
+msgid "First name"
+msgstr "名字"
+
+#: hd/etc/create_person.html:12 hd/etc/edit_person.html:12
+msgid "Surname"
+msgstr "姓氏"
+
+#: hd/etc/create_person.html:15 hd/etc/edit_person.html:15 hd/etc/person.html:7
+msgid "Sex"
+msgstr "性别"
+
+#: hd/etc/create_person.html:17 hd/etc/edit_person.html:17 hd/etc/person.html:7
+msgid "(unknown)"
+msgstr "（未知）"
+
+#: hd/etc/create_person.html:24 hd/etc/edit_person.html:24
+msgid "Birth date"
+msgstr "出生日期"
+
+#: hd/etc/create_person.html:24 hd/etc/edit_person.html:24
+msgid "e.g. 1900 or 12 JAN 1900"
+msgstr "例如：1900 或 12 JAN 1900"
+
+#: hd/etc/create_person.html:27 hd/etc/edit_person.html:27
+msgid "Birth place"
+msgstr "出生地"
+
+#: hd/etc/create_person.html:27 hd/etc/create_person.html:38
+#: hd/etc/edit_person.html:27 hd/etc/edit_person.html:38
+msgid "e.g. Town, County"
+msgstr "例如：城市，省/县"
+
+#: hd/etc/create_person.html:30 hd/etc/edit_person.html:30
+msgid "Birth note"
+msgstr "出生备注"
+
+#: hd/etc/create_person.html:31 hd/etc/edit_person.html:31
+msgid "Optional notes about birth"
+msgstr "关于出生的可选备注"
+
+#: hd/etc/create_person.html:35 hd/etc/edit_person.html:35
+msgid "Death date"
+msgstr "死亡日期"
+
+#: hd/etc/create_person.html:35 hd/etc/edit_person.html:35
+msgid "e.g. 1980 or 10 MAY 1980"
+msgstr "例如：1980 或 10 MAY 1980"
+
+#: hd/etc/create_person.html:38 hd/etc/edit_person.html:38
+msgid "Death place"
+msgstr "死亡地点"
+
+#: hd/etc/create_person.html:41 hd/etc/edit_person.html:41
+msgid "Death note"
+msgstr "死亡备注"
+
+#: hd/etc/create_person.html:42 hd/etc/edit_person.html:42
+msgid "Optional notes about death"
+msgstr "关于死亡的可选备注"
+
+#: hd/etc/create_person.html:46 hd/etc/edit_person.html:46
+msgid "Events:"
+msgstr "事件："
+
+#: hd/etc/create_person.html:53 hd/etc/edit_person.html:54
+msgid "Type (e.g. BAPTISM)"
+msgstr "类型（例如：洗礼）"
+
+#: hd/etc/create_person.html:54 hd/etc/edit_person.html:55
+msgid "Date (e.g. 12 JAN 1900)"
+msgstr "日期（例如：12 JAN 1900）"
+
+#: hd/etc/edit_family.html:2 hd/etc/edit_family.html:6 hd/etc/family.html:34
+msgid "Edit family"
+msgstr "编辑家庭"
+
+#: hd/etc/edit_family.html:52 hd/etc/edit_person.html:60
+msgid "Keep"
+msgstr "保留"
+
+#: hd/etc/edit_family.html:53 hd/etc/edit_person.html:61
+msgid "Remove"
+msgstr "移除"
+
+#: hd/etc/edit_family.html:63 hd/etc/edit_note.html:22
+#: hd/etc/edit_person.html:71
+msgid "Save"
+msgstr "保存"
+
+#: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6
+msgid "Edit note"
+msgstr "编辑笔记"
+
+#: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6 hd/etc/notes_list.html:7
+msgid "Create note"
+msgstr "创建笔记"
+
+#: hd/etc/edit_note.html:10
+#. Auto-filled draft translation
+msgid "Id (path-like, no .txt):"
+msgstr "Id（类似路径，不含 .txt）："
+
+#: hd/etc/edit_note.html:14
+#. Auto-filled draft translation
+msgid "Title:"
+msgstr "标题："
+
+#: hd/etc/edit_note.html:17
+#. Auto-filled draft translation
+msgid "Text:"
+msgstr "文本："
+
+#: hd/etc/edit_person.html:2 hd/etc/note_view.html:9
+msgid "Edit"
+msgstr "编辑"
+
+#: hd/etc/edit_person.html:6 hd/etc/person.html:74
+msgid "Edit person"
+msgstr "编辑人物"
+
+#: hd/etc/families_list.html:2
+msgid "Families — geneweb-py"
+msgstr "家族 — geneweb-py"
+
+#: hd/etc/families_list.html:6
+msgid "Families"
+msgstr "家族"
+
+#: hd/etc/families_list.html:7
+msgid "All families in the database."
+msgstr "数据库中的所有家族。"
+
+#: hd/etc/family.html:2 hd/etc/family.html:6 hd/etc/person.html:54
+msgid "Family"
+msgstr "家庭"
+
+#: hd/etc/family.html:10
+msgid "Children"
+msgstr "子女"
+
+#: hd/etc/family.html:20
+msgid "Family events"
+msgstr "家庭事件"
+
+#: hd/etc/family.html:36
+msgid "Delete family"
+msgstr "删除家庭"
+
+#: hd/etc/family.html:38 hd/etc/person.html:78
+msgid "Back"
+msgstr "返回"
+
+#: hd/etc/note_view.html:11
+msgid "Delete"
+msgstr "删除"
+
+#: hd/etc/note_view.html:13
+msgid "Back to notes"
+msgstr "返回笔记"
+
+#: hd/etc/notes_list.html:2
+msgid "Notes — geneweb-py"
+msgstr "笔记 — geneweb-py"
+
+#: hd/etc/people_list.html:2
+msgid "People — geneweb-py"
+msgstr "人物 — geneweb-py"
+
+#: hd/etc/people_list.html:6
+msgid "People"
+msgstr "人物"
+
+#: hd/etc/people_list.html:7
+msgid "All people in the database."
+msgstr "数据库中的所有人物。"
+
+#: hd/etc/person.html:10
+#. Auto-filled draft translation
+msgid "Spouse(s):"
+msgstr "配偶："
+
+#: hd/etc/person.html:18
+#. Auto-filled draft translation
+msgid "Parent(s):"
+msgstr "父母："
+
+#: hd/etc/person.html:26
+msgid "Birth"
+msgstr "出生"
+
+#: hd/etc/person.html:28 hd/etc/person.html:37
+#. Auto-filled draft translation
+msgid "Date:"
+msgstr "日期："
+
+#: hd/etc/person.html:29 hd/etc/person.html:38
+msgid "Place:"
+msgstr "地点"
+
+#: hd/etc/person.html:30 hd/etc/person.html:39
+msgid "Note:"
+msgstr "备注"
+
+#: hd/etc/person.html:35
+msgid "Death"
+msgstr "死亡"
+
+#: hd/etc/person.html:44
+msgid "Children:"
+msgstr "子女"
+
+#: hd/etc/person.html:52
+msgid "Family(ies):"
+msgstr "家庭："
+
+#: hd/etc/person.html:60
+msgid "Events"
+msgstr "事件"
+
+#: hd/etc/person.html:76
+msgid "Delete person"
+msgstr "删除人物"
+
+#: hd/etc/welcome.html:2 hd/etc/welcome.html:6
+msgid "Welcome to geneweb-py"
+msgstr "欢迎使用 geneweb-py"
+
+#: hd/etc/welcome.html:7
+msgid "Use the links below to explore and manage the family data."
+msgstr "使用下面的链接来浏览和管理家族数据。"
+
+#: hd/etc/welcome.html:9
+msgid "All people"
+msgstr "所有人物"
+
+#: hd/etc/welcome.html:10
+msgid "All families"
+msgstr "所有家族"
+
+#: hd/etc/welcome.html:13
+msgid "Change database"
+msgstr "切换数据库"
+# Chinese translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-10-29 14:45+0100\n"
+"PO-Revision-Date: 2025-10-29 14:11+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh\n"
+"Language-Team: zh <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: hd/etc/base.html:5 hd/etc/base.html:12 hd/etc/base.html:34
+#: hd/etc/edit_family.html:2 hd/etc/edit_person.html:2 hd/etc/family.html:2
+#: hd/etc/person.html:2
+msgid "geneweb-py"
+msgstr "geneweb-py"
+
+#: hd/etc/base.html:14 hd/etc/families_list.html:15 hd/etc/notes_list.html:7
+#: hd/etc/people_list.html:15
+msgid "Home"
+msgstr "主页"
+
+#: hd/etc/base.html:15 hd/etc/edit_note.html:2 hd/etc/note_view.html:2
+#: hd/etc/notes_list.html:6
+msgid "Notes"
+msgstr "笔记"
+
+#: hd/etc/base.html:16
+msgid "New person"
+msgstr "新人物"
+
+#: hd/etc/base.html:17
+msgid "New family"
+msgstr "新家庭"
+
+#: hd/etc/base.html:20
+msgid "Language:"
+msgstr "语言："
+
+#: hd/etc/base.html:21
+msgid "English"
+msgstr "英语"
+
+#: hd/etc/base.html:22
+msgid "Français"
+msgstr "法语"
+
+#: hd/etc/base.html:23
+msgid "Español"
+msgstr "西班牙语"
+
+#: hd/etc/base.html:24
+msgid "中文"
+msgstr "中文"
+
+#: hd/etc/choose_base.html:2
+msgid "Choose a database — geneweb-py"
+msgstr "选择数据库 — geneweb-py"
+
+#: hd/etc/choose_base.html:6
+msgid "Choose a genealogy database"
+msgstr "选择一个家谱数据库"
+
+#: hd/etc/choose_base.html:7
+msgid "Select the database you want to use for this browser session."
+msgstr "选择您想在此浏览器会话中使用的数据库。"
+
+#: hd/etc/choose_base.html:15
+msgid "Open"
+msgstr "打开"
+
+#: hd/etc/choose_base.html:19
+msgid "If your database is not listed, create a new base below."
+msgstr "如果您的数据库未列出，请在下面创建一个新的。"
+
+#: hd/etc/choose_base.html:22
+msgid "Create new base"
+msgstr "创建新数据库"
+
+#: hd/etc/choose_base.html:23
+msgid "new-base-name"
+msgstr "新数据库名称"
+
+#: hd/etc/choose_base.html:24 hd/etc/create_person.html:64
+msgid "Create"
+msgstr "创建"
+
+#: hd/etc/choose_base.html:28
+msgid "New bases will be created under the configured data directory and a fresh"
+msgstr "新的数据库将被创建在配置的数据目录下，并且一个"
+
+#: hd/etc/choose_base.html:29
+msgid "will be initialized when the base is first used."
+msgstr "将在首次使用该数据库时初始化。"
+
+#: hd/etc/create_family.html:2
+msgid "Create family — geneweb-py"
+msgstr "创建家庭 — geneweb-py"
+
+#: hd/etc/create_family.html:6 hd/etc/create_family.html:56
+#: hd/etc/families_list.html:14 hd/etc/welcome.html:12
+msgid "Create family"
+msgstr "创建家庭"
+
+#: hd/etc/create_family.html:9 hd/etc/edit_family.html:9 hd/etc/family.html:7
+msgid "Husband"
+msgstr "丈夫"
+
+#: hd/etc/create_family.html:11 hd/etc/create_family.html:21
+#: hd/etc/edit_family.html:11 hd/etc/edit_family.html:21
+msgid "(none)"
+msgstr "（无）"
+
+#: hd/etc/create_family.html:19 hd/etc/edit_family.html:19 hd/etc/family.html:8
+msgid "Wife"
+msgstr "妻子"
+
+#: hd/etc/create_family.html:29 hd/etc/edit_family.html:29
+msgid "Children (hold ctrl / cmd to select multiple)"
+msgstr "子女（按住 ctrl / cmd 以选择多个）"
+
+#: hd/etc/create_family.html:38 hd/etc/edit_family.html:38
+msgid "Family events:"
+msgstr "家庭事件："
+
+#: hd/etc/create_family.html:43 hd/etc/create_person.html:51
+#: hd/etc/edit_family.html:44 hd/etc/edit_person.html:52
+msgid "Event"
+msgstr "事件"
+
+#: hd/etc/create_family.html:45 hd/etc/edit_family.html:46
+msgid "Type (e.g. MARRIAGE)"
+msgstr "类型（例如：婚姻）"
+
+#: hd/etc/create_family.html:46 hd/etc/edit_family.html:47
+msgid "Date (e.g. 1 JUN 1920)"
+msgstr "日期（例如：1 JUN 1920）"
+
+#: hd/etc/create_family.html:47 hd/etc/create_person.html:55
+#: hd/etc/edit_family.html:48 hd/etc/edit_person.html:56
+msgid "Place"
+msgstr "地点"
+
+#: hd/etc/create_family.html:48 hd/etc/create_person.html:56
+#: hd/etc/edit_family.html:49 hd/etc/edit_person.html:57
+msgid "Note"
+msgstr "备注"
+
+#: hd/etc/create_family.html:52 hd/etc/create_person.html:60
+#: hd/etc/edit_family.html:59 hd/etc/edit_person.html:67
+msgid "Add event"
+msgstr "添加事件"
+
+#: hd/etc/create_family.html:57 hd/etc/create_person.html:65
+#: hd/etc/edit_family.html:64 hd/etc/edit_note.html:23
+#: hd/etc/edit_person.html:72
+msgid "Cancel"
+msgstr "取消"
+
+#: hd/etc/create_person.html:2
+msgid "Create person — geneweb-py"
+msgstr "创建人物 — geneweb-py"
+
+#: hd/etc/create_person.html:6 hd/etc/people_list.html:14
+#: hd/etc/welcome.html:11
+msgid "Create person"
+msgstr "创建人物"
+
+#: hd/etc/create_person.html:9 hd/etc/edit_person.html:9
+msgid "First name"
+msgstr "名字"
+
+#: hd/etc/create_person.html:12 hd/etc/edit_person.html:12
+msgid "Surname"
+msgstr "姓氏"
+
+#: hd/etc/create_person.html:15 hd/etc/edit_person.html:15 hd/etc/person.html:7
+msgid "Sex"
+msgstr "性别"
+
+#: hd/etc/create_person.html:17 hd/etc/edit_person.html:17 hd/etc/person.html:7
+msgid "(unknown)"
+msgstr "（未知）"
+
+#: hd/etc/create_person.html:24 hd/etc/edit_person.html:24
+msgid "Birth date"
+msgstr "出生日期"
+
+#: hd/etc/create_person.html:24 hd/etc/edit_person.html:24
+msgid "e.g. 1900 or 12 JAN 1900"
+msgstr "例如：1900 或 12 JAN 1900"
+
+#: hd/etc/create_person.html:27 hd/etc/edit_person.html:27
+msgid "Birth place"
+msgstr "出生地"
+
+#: hd/etc/create_person.html:27 hd/etc/create_person.html:38
+#: hd/etc/edit_person.html:27 hd/etc/edit_person.html:38
+msgid "e.g. Town, County"
+msgstr "例如：城市，省/县"
+
+#: hd/etc/create_person.html:30 hd/etc/edit_person.html:30
+msgid "Birth note"
+msgstr "出生备注"
+
+#: hd/etc/create_person.html:31 hd/etc/edit_person.html:31
+msgid "Optional notes about birth"
+msgstr "关于出生的可选备注"
+
+#: hd/etc/create_person.html:35 hd/etc/edit_person.html:35
+msgid "Death date"
+msgstr "死亡日期"
+
+#: hd/etc/create_person.html:35 hd/etc/edit_person.html:35
+msgid "e.g. 1980 or 10 MAY 1980"
+msgstr "例如：1980 或 10 MAY 1980"
+
+#: hd/etc/create_person.html:38 hd/etc/edit_person.html:38
+msgid "Death place"
+msgstr "死亡地点"
+
+#: hd/etc/create_person.html:41 hd/etc/edit_person.html:41
+msgid "Death note"
+msgstr "死亡备注"
+
+#: hd/etc/create_person.html:42 hd/etc/edit_person.html:42
+msgid "Optional notes about death"
+msgstr "关于死亡的可选备注"
+
+#: hd/etc/create_person.html:46 hd/etc/edit_person.html:46
+msgid "Events:"
+msgstr "事件："
+
+#: hd/etc/create_person.html:53 hd/etc/edit_person.html:54
+msgid "Type (e.g. BAPTISM)"
+msgstr "类型（例如：洗礼）"
+
+#: hd/etc/create_person.html:54 hd/etc/edit_person.html:55
+msgid "Date (e.g. 12 JAN 1900)"
+msgstr "日期（例如：12 JAN 1900）"
+
+#: hd/etc/edit_family.html:2 hd/etc/edit_family.html:6 hd/etc/family.html:34
+msgid "Edit family"
+msgstr "编辑家庭"
+
+#: hd/etc/edit_family.html:52 hd/etc/edit_person.html:60
+msgid "Keep"
+msgstr "保留"
+
+#: hd/etc/edit_family.html:53 hd/etc/edit_person.html:61
+msgid "Remove"
+msgstr "移除"
+
+#: hd/etc/edit_family.html:63 hd/etc/edit_note.html:22
+#: hd/etc/edit_person.html:71
+msgid "Save"
+msgstr "保存"
+
+#: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6
+msgid "Edit note"
+msgstr "编辑笔记"
+
+#: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6 hd/etc/notes_list.html:7
+msgid "Create note"
+msgstr "创建笔记"
+
+#: hd/etc/edit_note.html:10
+#. Auto-filled draft translation
+msgid "Id (path-like, no .txt):"
+msgstr "Id (path-like, no .txt):"
+
+#: hd/etc/edit_note.html:14
+#. Auto-filled draft translation
+msgid "Title:"
+msgstr "Title:"
+
+#: hd/etc/edit_note.html:17
+#. Auto-filled draft translation
+msgid "Text:"
+msgstr "Text:"
+
+#: hd/etc/edit_person.html:2 hd/etc/note_view.html:9
+msgid "Edit"
+msgstr "编辑"
+
+#: hd/etc/edit_person.html:6 hd/etc/person.html:74
+msgid "Edit person"
+msgstr "编辑人物"
+
+#: hd/etc/families_list.html:2
+msgid "Families — geneweb-py"
+msgstr "家族 — geneweb-py"
+
+#: hd/etc/families_list.html:6
+msgid "Families"
+msgstr "家族"
+
+#: hd/etc/families_list.html:7
+msgid "All families in the database."
+msgstr "数据库中的所有家族。"
+
+#: hd/etc/family.html:2 hd/etc/family.html:6 hd/etc/person.html:54
+msgid "Family"
+msgstr "家庭"
+
+#: hd/etc/family.html:10
+msgid "Children"
+msgstr "子女"
+
+#: hd/etc/family.html:20
+msgid "Family events"
+msgstr "家庭事件"
+
+#: hd/etc/family.html:36
+msgid "Delete family"
+msgstr "删除家庭"
+
+#: hd/etc/family.html:38 hd/etc/person.html:78
+msgid "Back"
+msgstr "返回"
+
+#: hd/etc/note_view.html:11
+msgid "Delete"
+msgstr "删除"
+
+#: hd/etc/note_view.html:13
+msgid "Back to notes"
+msgstr "返回笔记"
+
+#: hd/etc/notes_list.html:2
+msgid "Notes — geneweb-py"
+msgstr "笔记 — geneweb-py"
+
+#: hd/etc/people_list.html:2
+msgid "People — geneweb-py"
+msgstr "人物 — geneweb-py"
+
+#: hd/etc/people_list.html:6
+msgid "People"
+msgstr "所有人物"
+
+#: hd/etc/people_list.html:7
+msgid "All people in the database."
+msgstr "数据库中的所有人物。"
+
+#: hd/etc/person.html:10
+#. Auto-filled draft translation
+msgid "Spouse(s):"
+msgstr "Spouse(s):"
+
+#: hd/etc/person.html:18
+#. Auto-filled draft translation
+msgid "Parent(s):"
+msgstr "Parent(s):"
+msgstr "配偶："
+
+#: hd/etc/person.html:26
+msgid "Birth"
+msgstr "出生备注"
+msgstr "父母："
+
+#: hd/etc/person.html:28 hd/etc/person.html:37
+#. Auto-filled draft translation
+msgstr "出生"
+msgid "Date:"
+msgstr "Date:"
+
+#: hd/etc/person.html:29 hd/etc/person.html:38
+msgstr "日期："
+msgid "Place:"
+msgstr "地点"
+
+msgstr "死亡"
+#: hd/etc/person.html:30 hd/etc/person.html:39
+msgid "Note:"
+msgstr "备注"
+msgstr "家庭："
+
+#: hd/etc/person.html:35
+msgid "Death"
+msgstr "事件"
+msgstr "死亡备注"
+
+#: hd/etc/person.html:44
+msgstr "删除人物"
+msgid "Children:"
+msgstr "子女"
+
+#: hd/etc/person.html:52
+msgstr "Id（类似路径，不含 .txt）："
+msgid "Family(ies):"
+msgstr "家族"
+
+#: hd/etc/person.html:60
+msgstr "标题："
+msgid "Events"
+msgstr "事件："
+
+#: hd/etc/person.html:76
+msgstr "文本："
+msgid "Delete person"
+msgstr "创建人物"
+
+#: hd/etc/welcome.html:2 hd/etc/welcome.html:6
+msgid "Welcome to geneweb-py"
+msgstr "欢迎使用 geneweb-py"
+
+#: hd/etc/welcome.html:7
+msgid "Use the links below to explore and manage the family data."
+msgstr "使用下面的链接来浏览和管理家族数据。"
+
+#: hd/etc/welcome.html:9
+msgid "All people"
+msgstr "所有人物"
+
+#: hd/etc/welcome.html:10
+msgid "All families"
+msgstr "所有家族"
+
+#: hd/etc/welcome.html:13
+msgid "Change database"
+msgstr "切换数据库"
+

@@ -157,7 +157,7 @@ class Storage:
                 cur2.execute("SELECT child_id FROM family_children WHERE family_id = ?", (fid,))
                 children = [r["child_id"] for r in cur2.fetchall()]
                 fevents_list = []
-                if row.get("fevents_json"):
+                if row["fevents_json"]:
                     try:
                         fevents_list = json.loads(row["fevents_json"]) or []
                     except Exception:

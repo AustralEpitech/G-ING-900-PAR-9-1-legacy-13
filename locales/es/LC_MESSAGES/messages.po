@@ -1,0 +1,415 @@
+# Spanish translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-10-29 14:45+0100\n"
+"PO-Revision-Date: 2025-10-29 14:11+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: hd/etc/base.html:5 hd/etc/base.html:12 hd/etc/base.html:34
+#: hd/etc/edit_family.html:2 hd/etc/edit_person.html:2 hd/etc/family.html:2
+#: hd/etc/person.html:2
+msgid "geneweb-py"
+msgstr "geneweb-py"
+
+#: hd/etc/base.html:14 hd/etc/families_list.html:15 hd/etc/notes_list.html:7
+#: hd/etc/people_list.html:15
+msgid "Home"
+msgstr "Inicio"
+
+#: hd/etc/base.html:15 hd/etc/edit_note.html:2 hd/etc/note_view.html:2
+#: hd/etc/notes_list.html:6
+msgid "Notes"
+msgstr "Notas"
+
+#: hd/etc/base.html:16
+msgid "New person"
+msgstr "Nueva persona"
+
+#: hd/etc/base.html:17
+msgid "New family"
+msgstr "Nueva familia"
+
+#: hd/etc/base.html:20
+msgid "Language:"
+msgstr "Idioma:"
+
+#: hd/etc/base.html:21
+msgid "English"
+msgstr "Inglés"
+
+#: hd/etc/base.html:22
+msgid "Français"
+msgstr "Francés"
+
+#: hd/etc/base.html:23
+msgid "Español"
+msgstr "Español"
+
+#: hd/etc/base.html:24
+msgid "中文"
+msgstr "Chino"
+
+#: hd/etc/choose_base.html:2
+msgid "Choose a database — geneweb-py"
+msgstr "Elegir una base — geneweb-py"
+
+#: hd/etc/choose_base.html:6
+msgid "Choose a genealogy database"
+msgstr "Elegir una base de genealogía"
+
+#: hd/etc/choose_base.html:7
+msgid "Select the database you want to use for this browser session."
+msgstr "Seleccione la base de datos que desea usar para esta sesión del navegador."
+
+#: hd/etc/choose_base.html:15
+msgid "Open"
+msgstr "Abrir"
+
+#: hd/etc/choose_base.html:19
+msgid "If your database is not listed, create a new base below."
+msgstr "Si su base no está en la lista, cree una nueva a continuación."
+
+#: hd/etc/choose_base.html:22
+msgid "Create new base"
+msgstr "Crear nueva base"
+
+#: hd/etc/choose_base.html:23
+msgid "new-base-name"
+msgstr "nuevo-nombre-base"
+
+#: hd/etc/choose_base.html:24 hd/etc/create_person.html:64
+msgid "Create"
+msgstr "Crear"
+
+#: hd/etc/choose_base.html:28
+msgid "New bases will be created under the configured data directory and a fresh"
+msgstr "Nuevas bases se crearán en el directorio de datos configurado y un"
+
+#: hd/etc/choose_base.html:29
+msgid "will be initialized when the base is first used."
+msgstr "se inicializará cuando la base se use por primera vez."
+
+#: hd/etc/create_family.html:2
+msgid "Create family — geneweb-py"
+msgstr "Crear familia — geneweb-py"
+
+#: hd/etc/create_family.html:6 hd/etc/create_family.html:56
+#: hd/etc/families_list.html:14 hd/etc/welcome.html:12
+msgid "Create family"
+msgstr "Crear familia"
+
+#: hd/etc/create_family.html:9 hd/etc/edit_family.html:9 hd/etc/family.html:7
+msgid "Husband"
+msgstr "Esposo"
+
+#: hd/etc/create_family.html:11 hd/etc/create_family.html:21
+#: hd/etc/edit_family.html:11 hd/etc/edit_family.html:21
+msgid "(none)"
+msgstr "(ninguno)"
+
+#: hd/etc/create_family.html:19 hd/etc/edit_family.html:19 hd/etc/family.html:8
+msgid "Wife"
+msgstr "Esposa"
+
+#: hd/etc/create_family.html:29 hd/etc/edit_family.html:29
+msgid "Children (hold ctrl / cmd to select multiple)"
+msgstr "Hijos (mantenga ctrl/cmd para seleccionar varios)"
+
+#: hd/etc/create_family.html:38 hd/etc/edit_family.html:38
+msgid "Family events:"
+msgstr "Eventos familiares:"
+
+#: hd/etc/create_family.html:43 hd/etc/create_person.html:51
+#: hd/etc/edit_family.html:44 hd/etc/edit_person.html:52
+msgid "Event"
+msgstr "Evento"
+
+#: hd/etc/create_family.html:45 hd/etc/edit_family.html:46
+msgid "Type (e.g. MARRIAGE)"
+msgstr "Tipo (ej. MATRIMONIO)"
+
+#: hd/etc/create_family.html:46 hd/etc/edit_family.html:47
+msgid "Date (e.g. 1 JUN 1920)"
+msgstr "Fecha (ej. 1 JUN 1920)"
+
+#: hd/etc/create_family.html:47 hd/etc/create_person.html:55
+#: hd/etc/edit_family.html:48 hd/etc/edit_person.html:56
+msgid "Place"
+msgstr "Lugar"
+
+#: hd/etc/create_family.html:48 hd/etc/create_person.html:56
+#: hd/etc/edit_family.html:49 hd/etc/edit_person.html:57
+msgid "Note"
+msgstr "Nota"
+
+#: hd/etc/create_family.html:52 hd/etc/create_person.html:60
+#: hd/etc/edit_family.html:59 hd/etc/edit_person.html:67
+msgid "Add event"
+msgstr "Agregar evento"
+
+#: hd/etc/create_family.html:57 hd/etc/create_person.html:65
+#: hd/etc/edit_family.html:64 hd/etc/edit_note.html:23
+#: hd/etc/edit_person.html:72
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: hd/etc/create_person.html:2
+msgid "Create person — geneweb-py"
+msgstr "Crear persona — geneweb-py"
+
+#: hd/etc/create_person.html:6 hd/etc/people_list.html:14
+#: hd/etc/welcome.html:11
+msgid "Create person"
+msgstr "Crear persona"
+
+#: hd/etc/create_person.html:9 hd/etc/edit_person.html:9
+msgid "First name"
+msgstr "Nombre"
+
+#: hd/etc/create_person.html:12 hd/etc/edit_person.html:12
+msgid "Surname"
+msgstr "Apellido"
+
+#: hd/etc/create_person.html:15 hd/etc/edit_person.html:15 hd/etc/person.html:7
+msgid "Sex"
+msgstr "Sexo"
+
+#: hd/etc/create_person.html:17 hd/etc/edit_person.html:17 hd/etc/person.html:7
+msgid "(unknown)"
+msgstr "(desconocido)"
+
+#: hd/etc/create_person.html:24 hd/etc/edit_person.html:24
+msgid "Birth date"
+msgstr "Fecha de nacimiento"
+
+#: hd/etc/create_person.html:24 hd/etc/edit_person.html:24
+msgid "e.g. 1900 or 12 JAN 1900"
+msgstr "ej. 1900 o 12 ENE 1900"
+
+#: hd/etc/create_person.html:27 hd/etc/edit_person.html:27
+msgid "Birth place"
+msgstr "Lugar de nacimiento"
+
+#: hd/etc/create_person.html:27 hd/etc/create_person.html:38
+#: hd/etc/edit_person.html:27 hd/etc/edit_person.html:38
+msgid "e.g. Town, County"
+msgstr "ej. Ciudad, Provincia"
+
+#: hd/etc/create_person.html:30 hd/etc/edit_person.html:30
+msgid "Birth note"
+msgstr "Nota de nacimiento"
+
+#: hd/etc/create_person.html:31 hd/etc/edit_person.html:31
+msgid "Optional notes about birth"
+msgstr "Notas opcionales sobre el nacimiento"
+
+#: hd/etc/create_person.html:35 hd/etc/edit_person.html:35
+msgid "Death date"
+msgstr "Fecha de fallecimiento"
+
+#: hd/etc/create_person.html:35 hd/etc/edit_person.html:35
+msgid "e.g. 1980 or 10 MAY 1980"
+msgstr "ej. 1980 o 10 MAY 1980"
+
+#: hd/etc/create_person.html:38 hd/etc/edit_person.html:38
+msgid "Death place"
+msgstr "Lugar de fallecimiento"
+
+#: hd/etc/create_person.html:41 hd/etc/edit_person.html:41
+msgid "Death note"
+msgstr "Nota de fallecimiento"
+
+#: hd/etc/create_person.html:42 hd/etc/edit_person.html:42
+msgid "Optional notes about death"
+msgstr "Notas opcionales sobre el fallecimiento"
+
+#: hd/etc/create_person.html:46 hd/etc/edit_person.html:46
+msgid "Events:"
+msgstr "Eventos:"
+
+#: hd/etc/create_person.html:53 hd/etc/edit_person.html:54
+msgid "Type (e.g. BAPTISM)"
+msgstr "Tipo (ej. BAUTISMO)"
+
+#: hd/etc/create_person.html:54 hd/etc/edit_person.html:55
+msgid "Date (e.g. 12 JAN 1900)"
+msgstr "Fecha (ej. 12 ENE 1900)"
+
+#: hd/etc/edit_family.html:2 hd/etc/edit_family.html:6 hd/etc/family.html:34
+msgid "Edit family"
+msgstr "Editar familia"
+
+#: hd/etc/edit_family.html:52 hd/etc/edit_person.html:60
+msgid "Keep"
+msgstr "Conservar"
+
+#: hd/etc/edit_family.html:53 hd/etc/edit_person.html:61
+msgid "Remove"
+msgstr "Eliminar"
+
+#: hd/etc/edit_family.html:63 hd/etc/edit_note.html:22
+#: hd/etc/edit_person.html:71
+msgid "Save"
+msgstr "Guardar"
+
+#: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6
+msgid "Edit note"
+msgstr "Editar nota"
+
+#: hd/etc/edit_note.html:2 hd/etc/edit_note.html:6 hd/etc/notes_list.html:7
+msgid "Create note"
+msgstr "Crear nota"
+
+#: hd/etc/edit_note.html:10
+msgid "Id (path-like, no .txt):"
+msgstr "Id (ruta, sin .txt):"
+
+#: hd/etc/edit_note.html:14
+msgid "Title:"
+msgstr "Título:"
+
+#: hd/etc/edit_note.html:17
+msgid "Text:"
+msgstr "Texto:"
+
+#: hd/etc/edit_person.html:2 hd/etc/note_view.html:9
+msgid "Edit"
+msgstr "Editar"
+
+#: hd/etc/edit_person.html:6 hd/etc/person.html:74
+msgid "Edit person"
+msgstr "Editar persona"
+
+#: hd/etc/families_list.html:2
+msgid "Families — geneweb-py"
+msgstr "Familias — geneweb-py"
+
+#: hd/etc/families_list.html:6
+msgid "Families"
+msgstr "Familias"
+
+#: hd/etc/families_list.html:7
+msgid "All families in the database."
+msgstr "Todas las familias en la base de datos."
+
+#: hd/etc/family.html:2 hd/etc/family.html:6 hd/etc/person.html:54
+msgid "Family"
+msgstr "Familia"
+
+#: hd/etc/family.html:10
+msgid "Children"
+msgstr "Hijos"
+
+#: hd/etc/family.html:20
+msgid "Family events"
+msgstr "Eventos familiares"
+
+#: hd/etc/family.html:36
+msgid "Delete family"
+msgstr "Eliminar familia"
+
+#: hd/etc/family.html:38 hd/etc/person.html:78
+msgid "Back"
+msgstr "Volver"
+
+#: hd/etc/note_view.html:11
+msgid "Delete"
+msgstr "Eliminar"
+
+#: hd/etc/note_view.html:13
+msgid "Back to notes"
+msgstr "Volver a las notas"
+
+#: hd/etc/notes_list.html:2
+msgid "Notes — geneweb-py"
+msgstr "Notas — geneweb-py"
+
+#: hd/etc/people_list.html:2
+msgid "People — geneweb-py"
+msgstr "Personas — geneweb-py"
+
+#: hd/etc/people_list.html:6
+msgid "People"
+msgstr "Personas"
+
+#: hd/etc/people_list.html:7
+msgid "All people in the database."
+msgstr "Todas las personas en la base de datos."
+
+#: hd/etc/person.html:10
+msgid "Spouse(s):"
+msgstr "Cónyuge(s):"
+
+#: hd/etc/person.html:18
+msgid "Parent(s):"
+msgstr "Padre(s):"
+
+#: hd/etc/person.html:26
+msgid "Birth"
+msgstr "Nacimiento"
+
+#: hd/etc/person.html:28 hd/etc/person.html:37
+msgid "Date:"
+msgstr "Fecha:"
+
+#: hd/etc/person.html:29 hd/etc/person.html:38
+msgid "Place:"
+msgstr "Lugar"
+
+#: hd/etc/person.html:30 hd/etc/person.html:39
+msgid "Note:"
+msgstr "Nota"
+
+#: hd/etc/person.html:35
+msgid "Death"
+msgstr "Fallecimiento"
+
+#: hd/etc/person.html:44
+msgid "Children:"
+msgstr "Hijos"
+
+#: hd/etc/person.html:52
+msgid "Family(ies):"
+msgstr "Familias"
+
+#: hd/etc/person.html:60
+msgid "Events"
+msgstr "Eventos"
+
+#: hd/etc/person.html:76
+msgid "Delete person"
+msgstr "Eliminar persona"
+
+#: hd/etc/welcome.html:2 hd/etc/welcome.html:6
+msgid "Welcome to geneweb-py"
+msgstr "Bienvenido a geneweb-py"
+
+#: hd/etc/welcome.html:7
+msgid "Use the links below to explore and manage the family data."
+msgstr "Utilice los enlaces a continuación para explorar y gestionar los datos familiares."
+
+#: hd/etc/welcome.html:9
+msgid "All people"
+msgstr "Todas las personas"
+
+#: hd/etc/welcome.html:10
+msgid "All families"
+msgstr "Todas las familias"
+
+#: hd/etc/welcome.html:13
+msgid "Change database"
+msgstr "Cambiar base"
+

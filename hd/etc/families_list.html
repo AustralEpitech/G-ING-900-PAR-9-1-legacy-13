@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Families — geneweb-py{% endblock %}
+{% block title %}{{ _('Families — geneweb-py') }}{% endblock %}
 
 {% block content %}
   <div class="card">
-    <h1>Families</h1>
-    <p class="small-muted">All families in the database.</p>
+  <h1>{{ _('Families') }}</h1>
+  <p class="small-muted">{{ _('All families in the database.') }}</p>
     <ul>
       {% for f in families %}
         <li><a href="/family/{{ f.id }}">{{ f.label }} (Family {{ f.id }})</a></li>
       {% endfor %}
     </ul>
     <p class="nav-links">
-      <a class="button" href="/family/create">Create family</a>
-      <a class="button secondary" href="/">Home</a>
+      <a class="button" href="/family/create">{{ _('Create family') }}</a>
+      <a class="button secondary" href="/">{{ _('Home') }}</a>
     </p>
   </div>
 {% endblock %}

@@ -1,68 +1,68 @@
 {% extends "base.html" %}
-{% block title %}Create person — geneweb-py{% endblock %}
+{% block title %}{{ _('Create person — geneweb-py') }}{% endblock %}
 
 {% block content %}
   <div class="card">
-    <h1>Create person</h1>
+  <h1>{{ _('Create person') }}</h1>
     <form method="post" action="/person/create">
       <div class="form-row">
-        <label>First name: <input type="text" name="first_name" required></label>
+  <label>{{ _('First name') }}: <input type="text" name="first_name" required></label>
       </div>
       <div class="form-row">
-        <label>Surname: <input type="text" name="surname" required></label>
+  <label>{{ _('Surname') }}: <input type="text" name="surname" required></label>
       </div>
       <div class="form-row">
-        <label>Sex:
+  <label>{{ _('Sex') }}:
           <select name="sex">
-            <option value="">(unknown)</option>
+            <option value="">{{ _('(unknown)') }}</option>
             <option value="M">M</option>
             <option value="F">F</option>
           </select>
         </label>
       </div>
       <div class="form-row">
-        <label>Birth date: <input type="text" name="birth_date" placeholder="e.g. 1900 or 12 JAN 1900"></label>
+  <label>{{ _('Birth date') }}: <input type="text" name="birth_date" placeholder="{{ _('e.g. 1900 or 12 JAN 1900') }}"></label>
       </div>
       <div class="form-row">
-        <label>Birth place: <input type="text" name="birth_place" placeholder="e.g. Town, County"></label>
+  <label>{{ _('Birth place') }}: <input type="text" name="birth_place" placeholder="{{ _('e.g. Town, County') }}"></label>
       </div>
       <div class="form-row">
-        <label>Birth note:
-          <textarea name="birth_note" rows="2" placeholder="Optional notes about birth"></textarea>
+        <label>{{ _('Birth note') }}:
+          <textarea name="birth_note" rows="2" placeholder="{{ _('Optional notes about birth') }}"></textarea>
         </label>
       </div>
       <div class="form-row">
-        <label>Death date: <input type="text" name="death_date" placeholder="e.g. 1980 or 10 MAY 1980"></label>
+  <label>{{ _('Death date') }}: <input type="text" name="death_date" placeholder="{{ _('e.g. 1980 or 10 MAY 1980') }}"></label>
       </div>
       <div class="form-row">
-        <label>Death place: <input type="text" name="death_place" placeholder="e.g. Town, County"></label>
+  <label>{{ _('Death place') }}: <input type="text" name="death_place" placeholder="{{ _('e.g. Town, County') }}"></label>
       </div>
       <div class="form-row">
-        <label>Death note:
-          <textarea name="death_note" rows="2" placeholder="Optional notes about death"></textarea>
+        <label>{{ _('Death note') }}:
+          <textarea name="death_note" rows="2" placeholder="{{ _('Optional notes about death') }}"></textarea>
         </label>
       </div>
       <div class="form-row">
-        <label>Events:</label>
+  <label>{{ _('Events:') }}</label>
         <div>
           {% set rows = event_rows or 1 %}
             {% for i in range(rows) %}
               <div class="event-row" style="margin-bottom:10px;padding:6px;border:1px solid #eee;border-radius:4px;">
-                <div style="margin-bottom:6px;font-weight:600">Event {{ loop.index }}</div>
+                <div style="margin-bottom:6px;font-weight:600">{{ _('Event') }} {{ loop.index }}</div>
                 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                  <input type="text" name="pevent_kind" placeholder="Type (e.g. BAPTISM)" />
-                  <input type="text" name="pevent_date" placeholder="Date (e.g. 12 JAN 1900)" />
-                  <input type="text" name="pevent_place" placeholder="Place" />
-                  <input type="text" name="pevent_note" placeholder="Note" />
+                  <input type="text" name="pevent_kind" placeholder="{{ _('Type (e.g. BAPTISM)') }}" />
+                  <input type="text" name="pevent_date" placeholder="{{ _('Date (e.g. 12 JAN 1900)') }}" />
+                  <input type="text" name="pevent_place" placeholder="{{ _('Place') }}" />
+                  <input type="text" name="pevent_note" placeholder="{{ _('Note') }}" />
                 </div>
               </div>
             {% endfor %}
-          <p><a href="/person/create?event_rows={{ rows + 1 }}">Add event</a></p>
+          <p><a href="/person/create?event_rows={{ rows + 1 }}">{{ _('Add event') }}</a></p>
         </div>
       </div>
       <div class="form-row">
-        <button type="submit">Create</button>
-        <a class="button secondary" href="/">Cancel</a>
+  <button type="submit">{{ _('Create') }}</button>
+  <a class="button secondary" href="/">{{ _('Cancel') }}</a>
       </div>
     </form>
   </div>

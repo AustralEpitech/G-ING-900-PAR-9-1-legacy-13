@@ -1,21 +1,28 @@
 <!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <title>{% block title %}geneweb-py{% endblock %}</title>
+  <meta charset="utf-8">
+  <title>{% block title %}{{ _('geneweb-py') }}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/static/style.css">
   </head>
   <body>
     <header class="site-header">
       <div class="container">
-        <h1 class="site-title"><a href="/">geneweb-py</a></h1>
+        <h1 class="site-title"><a href="/">{{ _('geneweb-py') }}</a></h1>
         <nav class="main-nav">
-          <a href="/">Home</a>
-          <a href="/notes">Notes</a>
-          <a href="/person/create">New person</a>
-          <a href="/family/create">New family</a>
+          <a href="/">{{ _('Home') }}</a>
+          <a href="/notes">{{ _('Notes') }}</a>
+          <a href="/person/create">{{ _('New person') }}</a>
+          <a href="/family/create">{{ _('New family') }}</a>
         </nav>
+        <div class="lang-switch">
+          <span>{{ _('Language:') }}</span>
+          <a href="?lang=en">{{ _('English') }}</a> |
+          <a href="?lang=fr">{{ _('Français') }}</a> |
+          <a href="?lang=es">{{ _('Español') }}</a> |
+          <a href="?lang=zh">{{ _('中文') }}</a>
+        </div>
       </div>
     </header>
 
@@ -24,7 +31,7 @@
     </main>
 
     <footer class="site-footer">
-      <div class="container">&copy; geneweb-py</div>
+      <div class="container">&copy; {{ _('geneweb-py') }}</div>
     </footer>
   </body>
 </html>
