@@ -334,7 +334,7 @@ msgstr "删除"
 
 #: hd/etc/note_view.html:13
 msgid "Back to notes"
-msgstr "死亡备注"
+msgstr "返回笔记"
 
 #: hd/etc/notes_list.html:2
 msgid "Notes — geneweb-py"
