@@ -391,7 +391,7 @@ msgstr "Events:"
 
 #: hd/etc/person.html:76
 msgid "Delete person"
-msgstr "Create person"
+msgstr "Delete person"
 
 #: hd/etc/welcome.html:2 hd/etc/welcome.html:6
 msgid "Welcome to geneweb-py"
