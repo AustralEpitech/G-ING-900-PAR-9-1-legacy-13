@@ -41,6 +41,12 @@ python -m uvicorn geneweb_py.web.app:app --reload --port 8000
 - Notes UI: http://127.0.0.1:8000/notes
 - Example plugin: http://127.0.0.1:8000/hello-plugin (plugin template + CSS are included under `plugins/example_plugin`)
 
+Behavior note: on first visit the root page will prompt you to choose a database (called a "base").
+The selected base is stored per-client (in a cookie named `gw_base`) so different browsers/clients
+can use different databases simultaneously. You can also temporarily override the base for a
+single request using the `?b=<base>` query parameter. Use the "Change database" button on the
+welcome page to clear the cookie and return to the base selection UI.
+
 ### API
 
 - Programmatic JSON API endpoints are available under `/api`:
@@ -60,6 +66,14 @@ The project uses `geneweb_py.config.load_config()` which supports:
 	- `GENEWEB_DATA_DIR`
 	- `GENEWEB_TEMPLATES_DIR`
 	- `GENEWEB_STATIC_DIR`
+
+Database selection behavior
+- The server manages multiple named bases: each base is a subdirectory under the configured
+  `data_dir` and contains its own `storage.db` SQLite file.
+- On first use a base directory will be created automatically when you create content (or when
+  you explicitly create a base in the UI).
+- To create a base from the UI: visit the root (choose-base) page and use the "Create new base"
+  form. The server will initialize the base and then redirect and set the `gw_base` cookie.
 
 Example: run with a custom config file in PowerShell
 
@@ -174,8 +188,21 @@ Notes:
 ## Running tests
 
 Unit and integration tests use `pytest`. Integration tests in this repository are implemented
-to run in-process (they call handlers directly or use FastAPI's TestClient) and therefore do
-not require a running `uvicorn` server in most cases. To run the full test suite:
+to run against a live test server (a small uvicorn subprocess) using a `live_server` fixture
+that copies a minimal runtime layout into a temporary directory and starts the app there. That
+fixture and the test suite are designed to avoid mutating your repository `data/` folder.
+
+Important testing notes:
+- The repository provides `pytest.ini` which disables the `pytest-django` plugin by default
+	(some environments install that plugin and it auto-skips tests when no Django settings are
+	configured). This makes `pytest` run deterministically without needing `-p no:django`.
+- Tests create an isolated temporary `GENEWEB_DATA_DIR` for the whole pytest session so DB writes
+	and note files are written to a temp directory and cleaned up after the run. This prevents
+	tests from modifying your repository `data/` folder.
+- The integration `live_server` fixture ensures subprocesses inherit the test environment
+	(including `GENEWEB_DATA_DIR` and `PYTHONPATH`) so test runs are hermetic.
+
+To run the full test suite:
 
 Install dependencies (PowerShell):
 
@@ -196,8 +223,9 @@ Run only integration tests (if present):
 pytest tests/integration -q -p no:django
 ```
 
-If your environment auto-loads pytest plugins you don't want, you can temporarily disable
-plugin autoload for the command as shown above in the original README.
+If you have any problems with tests touching your production data, ensure you're running
+inside the project's virtual environment and then run pytest normally; the test suite will
+use a temporary data directory automatically.
 
 If tests fail, ensure you're running inside the project's virtual environment and that
 `fastapi`, `jinja2`, and testing dependencies are installed.
