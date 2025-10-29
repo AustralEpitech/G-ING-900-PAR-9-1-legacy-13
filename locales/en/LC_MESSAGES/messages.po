@@ -359,7 +359,7 @@ msgstr ""
 
 #: hd/etc/person.html:26
 msgid "Birth"
-msgstr "Birth note"
+msgstr "Birth"
 
 #: hd/etc/person.html:28 hd/etc/person.html:37
 msgid "Date:"
