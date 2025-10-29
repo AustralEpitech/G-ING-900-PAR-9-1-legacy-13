@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Edit family {{ family.id }} — geneweb-py{% endblock %}
+{% block title %}{{ _('Edit family') }} {{ family.id }} — {{ _('geneweb-py') }}{% endblock %}
 
 {% block content %}
   <div class="card">
-    <h1>Edit family {{ family.id }}</h1>
+  <h1>{{ _('Edit family') }} {{ family.id }}</h1>
     <form method="post" action="/family/{{ family.id }}/edit">
       <div class="form-row">
-        <label>Husband:
+  <label>{{ _('Husband') }}:
           <select name="husband_id">
-            <option value="">(none)</option>
+            <option value="">{{ _('(none)') }}</option>
             {% for p in persons %}
               <option value="{{ p.id }}" {% if p.id == family.husband_id %}selected{% endif %}>{{ p.first_name }} {{ p.surname }}</option>
             {% endfor %}
@@ -16,9 +16,9 @@
         </label>
       </div>
       <div class="form-row">
-        <label>Wife:
+  <label>{{ _('Wife') }}:
           <select name="wife_id">
-            <option value="">(none)</option>
+            <option value="">{{ _('(none)') }}</option>
             {% for p in persons %}
               <option value="{{ p.id }}" {% if p.id == family.wife_id %}selected{% endif %}>{{ p.first_name }} {{ p.surname }}</option>
             {% endfor %}
@@ -26,7 +26,7 @@
         </label>
       </div>
       <div class="form-row">
-        <label>Children (hold ctrl / cmd to select multiple):
+  <label>{{ _('Children (hold ctrl / cmd to select multiple)') }}:
           <select name="children_ids" multiple size="6">
             {% for p in persons %}
               <option value="{{ p.id }}" {% if p.id in family.children_ids %}selected{% endif %}>{{ p.first_name }} {{ p.surname }}</option>
@@ -35,33 +35,33 @@
         </label>
       </div>
       <div class="form-row">
-        <label>Family events:</label>
+  <label>{{ _('Family events:') }}</label>
         <div>
           {% set rows = fevent_rows or 2 %}
           {% for i in range(rows) %}
             {% set ev = family.fevents[i] if i < family.fevents|length else None %}
             <div class="event-row" style="margin-bottom:10px;padding:6px;border:1px solid #eee;border-radius:4px;">
-              <div style="margin-bottom:6px;font-weight:600">Event {{ loop.index }}</div>
+              <div style="margin-bottom:6px;font-weight:600">{{ _('Event') }} {{ loop.index }}</div>
               <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                <input type="text" name="fevent_kind" placeholder="Type (e.g. MARRIAGE)" value="{{ ev.kind if ev else '' }}" />
-                <input type="text" name="fevent_date" placeholder="Date (e.g. 1 JUN 1920)" value="{{ ev.date.to_iso() if ev and ev.date else '' }}" />
-                <input type="text" name="fevent_place" placeholder="Place" value="{{ ev.place.to_simple() if ev and ev.place else '' }}" />
-                <input type="text" name="fevent_note" placeholder="Note" value="{{ ev.note if ev else '' }}" />
+                <input type="text" name="fevent_kind" placeholder="{{ _('Type (e.g. MARRIAGE)') }}" value="{{ ev.kind if ev else '' }}" />
+                <input type="text" name="fevent_date" placeholder="{{ _('Date (e.g. 1 JUN 1920)') }}" value="{{ ev.date.to_iso() if ev and ev.date else '' }}" />
+                <input type="text" name="fevent_place" placeholder="{{ _('Place') }}" value="{{ ev.place.to_simple() if ev and ev.place else '' }}" />
+                <input type="text" name="fevent_note" placeholder="{{ _('Note') }}" value="{{ ev.note if ev else '' }}" />
                 <label style="margin-left:6px">Action:
                   <select name="fevent_action">
-                    <option value="">Keep</option>
-                    <option value="remove">Remove</option>
+                    <option value="">{{ _('Keep') }}</option>
+                      <option value="remove">{{ _('Remove') }}</option>
                   </select>
                 </label>
               </div>
             </div>
           {% endfor %}
-          <p><a href="/family/{{ family.id }}/edit?fevent_rows={{ rows + 1 }}">Add event</a></p>
+          <p><a href="/family/{{ family.id }}/edit?fevent_rows={{ rows + 1 }}">{{ _('Add event') }}</a></p>
         </div>
       </div>
       <div class="form-row">
-        <button type="submit">Save</button>
-        <a class="button secondary" href="/family/{{ family.id }}">Cancel</a>
+  <button type="submit">{{ _('Save') }}</button>
+  <a class="button secondary" href="/family/{{ family.id }}">{{ _('Cancel') }}</a>
       </div>
     </form>
   </div>

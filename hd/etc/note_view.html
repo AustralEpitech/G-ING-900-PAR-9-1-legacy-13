@@ -1,16 +1,16 @@
 {% extends "base.html" %}
-{% block title %}{{ note.title or note.id }} — Notes{% endblock %}
+{% block title %}{{ note.title or note.id }} — {{ _('Notes') }}{% endblock %}
 
 {% block content %}
   <div class="card">
     <h1>{{ note.title or note.id }}</h1>
     <pre style="white-space:pre-wrap">{{ note.text }}</pre>
     <p class="nav-links">
-      <a class="button" href="/notes/{{ note.id }}/edit">Edit</a>
+      <a class="button" href="/notes/{{ note.id }}/edit">{{ _('Edit') }}</a>
       <form method="post" action="/notes/{{ note.id }}/delete" style="display:inline">
-        <button type="submit">Delete</button>
+        <button type="submit">{{ _('Delete') }}</button>
       </form>
-      <a class="button secondary" href="/notes">Back to notes</a>
+      <a class="button secondary" href="/notes">{{ _('Back to notes') }}</a>
     </p>
   </div>
 {% endblock %}

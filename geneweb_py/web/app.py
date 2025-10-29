@@ -10,6 +10,8 @@ from ..models import Note
 import logging
 from ..plugins import load_plugins
 from ..config import load_config
+import gettext
+from pathlib import Path as _Path
 
 app = FastAPI(title="geneweb-py")
 
@@ -24,6 +26,79 @@ app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 templates_dir = Path("hd") / "etc"
 templates_dir.mkdir(parents=True, exist_ok=True)
 templates = Jinja2Templates(directory=str(templates_dir))
+
+
+# Locale / i18n middleware and helper
+def _pick_language_from_accept_header(accept_lang_header: str | None) -> str | None:
+    """Very small Accept-Language parser: return first language code if present."""
+    if not accept_lang_header:
+        return None
+    # header like: 'fr-CH,fr;q=0.9,en;q=0.8'
+    parts = [p.strip() for p in accept_lang_header.split(",") if p.strip()]
+    if not parts:
+        return None
+    # take the first token and strip any ;q=...
+    first = parts[0].split(";")[0]
+    # keep only language part (e.g. 'fr' from 'fr-CH')
+    if "-" in first:
+        return first.split("-")[0]
+    return first
+
+
+@app.middleware("http")
+async def locale_middleware(request: Request, call_next):
+    """Determine requested locale from query param `lang`, cookie `gw_lang`, or Accept-Language header.
+    Load gettext translation for that locale (fallback=True) and save helpers on request.state.
+    """
+    # order of precedence: query param, cookie, Accept-Language
+    lang = request.query_params.get("lang") or request.cookies.get("gw_lang")
+    if not lang:
+        lang = _pick_language_from_accept_header(request.headers.get("accept-language"))
+    if not lang:
+        lang = "en"
+
+    try:
+        localedir = str(_Path("locales"))
+        trans = gettext.translation("messages", localedir=localedir, languages=[lang], fallback=True)
+    except Exception:
+        # defensive: fallback to neutral translation
+        trans = gettext.NullTranslations()
+
+    # Attach helpers to request.state for use by handlers
+    request.state._ = trans.gettext
+    request.state.ngettext = getattr(trans, "ngettext", lambda s, p, n: s if n == 1 else p)
+    request.state.lang = lang
+
+    # proceed
+    response = await call_next(request)
+
+    # Persist lang if given as query param
+    if request.query_params.get("lang"):
+        response.set_cookie(key="gw_lang", value=request.query_params.get("lang"), httponly=False)
+
+    return response
+
+
+def localized_template_response(template_name: str, context: dict) -> HTMLResponse:
+    """Wrap templates.TemplateResponse to inject translation helpers from request.state.
+
+    Expects the context to contain the Request under key 'request'.
+    """
+    req = context.get("request")
+    if req is None:
+        # fallback to plain TemplateResponse if no request provided
+        return templates.TemplateResponse(template_name, context)
+
+    # safe retrieval of translation helpers
+    _fn = getattr(req.state, "_", lambda s: s)
+    nget = getattr(req.state, "ngettext", lambda s, p, n: s if n == 1 else p)
+    lang = getattr(req.state, "lang", None)
+
+    ctx = dict(context)
+    # ensure request is present (TemplateResponse expects it)
+    ctx.setdefault("request", req)
+    ctx.update({"_": _fn, "ngettext": nget, "LANG": lang})
+    return templates.TemplateResponse(template_name, ctx)
 
 
 # Do not create the Storage instance at import time. Creating it on import
@@ -134,8 +209,8 @@ def welcome(request: Request):
     if current is None:
         # present available bases and a simple form to choose one
         bases = storage_manager.list_bases() if storage_manager is not None else []
-        return templates.TemplateResponse("choose_base.html", {"request": request, "bases": bases})
-    return templates.TemplateResponse("welcome.html", {"request": request})
+        return localized_template_response("choose_base.html", {"request": request, "bases": bases})
+    return localized_template_response("welcome.html", {"request": request})
 
 
 
@@ -157,7 +232,7 @@ def create_base(request: Request, name: str = Form(...)):
     safe_name = Path(name).name
     if not safe_name or safe_name != name:
         # invalid name or attempted traversal
-        return templates.TemplateResponse("choose_base.html", {"request": request, "bases": storage_manager.list_bases() if storage_manager else [], "error": "Invalid base name"})
+        return localized_template_response("choose_base.html", {"request": request, "bases": storage_manager.list_bases() if storage_manager else [], "error": "Invalid base name"})
     try:
         # Ensure storage manager exists and create the storage (initializes DB)
         if storage_manager is None:
@@ -165,7 +240,7 @@ def create_base(request: Request, name: str = Form(...)):
         storage_manager.get_storage(safe_name)
     except Exception:
         logging.exception("Failed to create base %s", safe_name)
-        return templates.TemplateResponse(
+        return localized_template_response(
             "choose_base.html",
             {"request": request, "bases": storage_manager.list_bases() if storage_manager else [], "error": "Failed to create base"},
         )
@@ -186,7 +261,7 @@ def change_db(request: Request):
 @app.get("/people", response_class=HTMLResponse)
 def people_list(request: Request):
     persons = storage.list_persons()
-    return templates.TemplateResponse("people_list.html", {"request": request, "persons": persons})
+    return localized_template_response("people_list.html", {"request": request, "persons": persons})
 
 
 @app.get("/families", response_class=HTMLResponse)
@@ -226,12 +301,12 @@ def families_list(request: Request):
         label = format_parent_names(names)
         families_display.append({"id": f.id, "label": label})
 
-    return templates.TemplateResponse("families_list.html", {"request": request, "families": families_display})
+    return localized_template_response("families_list.html", {"request": request, "families": families_display})
 
 
 @app.get("/person/create", response_class=HTMLResponse)
 def create_person_form(request: Request, event_rows: int = 1):
-    return templates.TemplateResponse("create_person.html", {"request": request, "event_rows": event_rows})
+    return localized_template_response("create_person.html", {"request": request, "event_rows": event_rows})
 
 
 @app.post("/person/create")
@@ -292,7 +367,7 @@ def edit_person_form(request: Request, pid: str, event_rows: Optional[int] = Non
         raise HTTPException(status_code=404, detail="Person not found")
     # determine how many event rows to render: provided event_rows overrides; otherwise base on existing events
     rows = max(event_rows, len(p.pevents)) if event_rows is not None else len(p.pevents)
-    return templates.TemplateResponse("edit_person.html", {"request": request, "person": p, "event_rows": rows})
+    return localized_template_response("edit_person.html", {"request": request, "person": p, "event_rows": rows})
 
 
 @app.post("/person/{pid}/edit")
@@ -447,7 +522,7 @@ def delete_person(pid: str):
 @app.get("/family/create", response_class=HTMLResponse)
 def create_family_form(request: Request, fevent_rows: int = 1):
     persons = storage.list_persons()
-    return templates.TemplateResponse("create_family.html", {"request": request, "persons": persons, "fevent_rows": fevent_rows})
+    return localized_template_response("create_family.html", {"request": request, "persons": persons, "fevent_rows": fevent_rows})
 
 
 @app.post("/family/create")
@@ -482,7 +557,7 @@ def edit_family_form(request: Request, fid: str, fevent_rows: Optional[int] = No
         raise HTTPException(status_code=404, detail="Family not found")
     persons = storage.list_persons()
     rows = max(fevent_rows, len(f.fevents)) if fevent_rows is not None else len(f.fevents)
-    return templates.TemplateResponse("edit_family.html", {"request": request, "family": f, "persons": persons, "fevent_rows": rows})
+    return localized_template_response("edit_family.html", {"request": request, "family": f, "persons": persons, "fevent_rows": rows})
 
 
 @app.post("/family/{fid}/edit")
@@ -589,7 +664,7 @@ def person_page(request: Request, pid: str):
         len(children),
         len(families),
     )
-    return templates.TemplateResponse(
+    return localized_template_response(
         "person.html",
         {
             "request": request,
@@ -611,7 +686,7 @@ def family_page(request: Request, fid: str):
     husband = storage.get_person(f.husband_id) if f.husband_id else None
     wife = storage.get_person(f.wife_id) if f.wife_id else None
     children = [storage.get_person(cid) for cid in f.children_ids]
-    return templates.TemplateResponse(
+    return localized_template_response(
         "family.html",
         {"request": request, "family": f, "husband": husband, "wife": wife, "children": children},
     )
@@ -621,12 +696,12 @@ def family_page(request: Request, fid: str):
 @app.get("/notes", response_class=HTMLResponse)
 def notes_list(request: Request):
     notes = list(storage.list_notes())
-    return templates.TemplateResponse("notes_list.html", {"request": request, "notes": notes})
+    return localized_template_response("notes_list.html", {"request": request, "notes": notes})
 
 
 @app.get("/notes/create", response_class=HTMLResponse)
 def create_note_form(request: Request):
-    return templates.TemplateResponse("edit_note.html", {"request": request, "note": None})
+    return localized_template_response("edit_note.html", {"request": request, "note": None})
 
 
 @app.post("/notes/create")
@@ -641,7 +716,7 @@ def note_view(request: Request, nid: str):
     n = storage.get_note(nid)
     if n is None:
         raise HTTPException(status_code=404, detail="Note not found")
-    return templates.TemplateResponse("note_view.html", {"request": request, "note": n})
+    return localized_template_response("note_view.html", {"request": request, "note": n})
 
 
 @app.get("/notes/{nid}/edit", response_class=HTMLResponse)
@@ -649,8 +724,8 @@ def edit_note_form(request: Request, nid: str):
     n = storage.get_note(nid)
     if n is None:
         # present create form prefilled with id
-        return templates.TemplateResponse("edit_note.html", {"request": request, "note": Note(id=nid, title="", text="")})
-    return templates.TemplateResponse("edit_note.html", {"request": request, "note": n})
+        return localized_template_response("edit_note.html", {"request": request, "note": Note(id=nid, title="", text="")})
+    return localized_template_response("edit_note.html", {"request": request, "note": n})
 
 
 @app.post("/notes/{nid}/edit")
